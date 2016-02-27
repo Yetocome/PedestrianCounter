@@ -13,10 +13,12 @@
 #include <opencv2/opencv.hpp>
 #include <vector>
 #include "Basis.hpp"
-#include "Utilities.hpp"
+
 
 using namespace std;
 using namespace cv;
+
+
 
 class PDTrackerOne {
 public:
@@ -24,7 +26,7 @@ public:
 
     /* Core */
     bool tracking(Mat& frame);
-    PDSeq kill();
+    string kill();
     bool lost(); // Boolean value false lasts 500 frames, return true.
     
     /* Set */
@@ -41,6 +43,7 @@ public:
 private:
     double calSearchWindow();
 private:
+    Point lastLoc;
     unsigned long who;
     Size size;
     PDSeq Trajectory;
@@ -65,14 +68,14 @@ public:
 //    int addTracker(Mat& fisrtFrame, Pedestrian& newcomer);
     unsigned long addTracker(Mat& fisrtFrame, Rect trackBox, int AreaID);
 
-    PDSeq delTracker(int ID);
+    string delTracker(int ID);
 //    const PDSeq& getCurrPDSeq();
     const vector<Rect>& getCurrRects();
     unsigned long getSize();
+    int getOldID(Rect suspision, double similarity);
 //    const PDTrackerOne& getTracker(int ID);
     
     unsigned long boom();
-    unsigned long getMutiPastNum(int fromID, int toID);
     unsigned long getLostNum();
 private:
 //    PDSeq currPD;
@@ -83,6 +86,39 @@ private:
     vector<PDTrackerOne> trackers;
 };
 
+
+
 #endif /* Tracker_hpp */
 
 ////////////////////////////////Test Code/////////////////////////////////////////////
+
+//VideoCapture cap(TEST_VIDEO_0);
+//if (!cap.isOpened())
+//return -1;
+//
+//Mat img, show_img;
+//PDTrackerList ptl;
+//pic_manipulator painter;
+//namedWindow("video capture", CV_WINDOW_AUTOSIZE);
+//int areaID = 0;
+//
+//while (true) { // Press any key to exit
+//    /* code */
+//    cap >> img;
+//    if (!img.data)
+//        continue;
+//    ptl.tracking(img);
+//    char op = waitKey(20);
+//    if (op == 32) { // 空格键暂停，增加跟踪框
+//        painter.load(img);
+//        painter.draw_rect();
+//        ptl.addTracker(img, painter.getSelectRect(), areaID++);
+//    } else if (op == 27) {
+//        break;
+//    }
+//    drawFound(img, show_img, ptl.getCurrRects(), Scalar(0, 255, 0));
+//    imshow("video capture", show_img);
+//}
+
+
+

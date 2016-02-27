@@ -7,12 +7,11 @@
 //
 
 #include "Painter.hpp"
-
+#include "Utilities.hpp"
 
 const Mat doge = imread("/Users/xmh/Desktop/doge.jpg");
 Mat doge_anysize;
 double doge_coef = (double)doge.cols / doge.rows;
-
 
 /** Part1 **/
 
@@ -33,7 +32,8 @@ pic_manipulator::pic_manipulator(Mat &a) : src(a){
     previousPoint = Point(-1, -1);
     greenMask = Mat(src.size(), CV_8UC4,Scalar(0, 255, 0));
 }
-pic_manipulator::~pic_manipulator(){}
+pic_manipulator::~pic_manipulator(){
+}
 
 void pic_manipulator::load(const string &a){
     src = imread(a);
@@ -350,10 +350,30 @@ Line pic_manipulator::getLine() {
     return selection_line;
 }
 
-void drawFound(Mat& input, Mat& output, vector<Rect> found) {
+Point pic_manipulator::getPoint() {
+    return point_place;
+}
+
+void drawFound(Mat& input, Mat& output, vector<Rect> found, Scalar color) {
     input.copyTo(output); // Time consuming
     for (vector<Rect>::iterator iter = found.begin(); iter != found.end(); ++iter)
-        rectangle(output, *iter, Scalar(0,255,0), 2);
+        rectangle(output, *iter, color, 2);
+    
+    
+    
+}
+void putPDInfo(Mat& input, Mat& output, Pedestrian target) {
+    
+    
+}
+
+void drawTrajectory(Mat& img, PDSeq& list, Scalar color) {
+    
+    
+}
+
+void drawArea(Mat& input, Mat& output, Rect area, Scalar color) {
+    
     
 }
 

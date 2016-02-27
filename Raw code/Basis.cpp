@@ -11,9 +11,9 @@
 PDSeq::PDSeq(int size) {
     seq.resize(size);
 }
-PDSeq::~PDSeq() {
-    
-}
+//PDSeq::~PDSeq() {
+//    
+//}
 
 Pedestrian& PDSeq::operator[](int ID) {
     return seq[ID];

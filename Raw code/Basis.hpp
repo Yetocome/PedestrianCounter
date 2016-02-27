@@ -31,7 +31,7 @@ struct Line {
 class PDSeq {
 public:
     PDSeq(int size = 0);
-    ~PDSeq();
+//    ~PDSeq();
     
     Pedestrian& operator[](int ID);
 //    Pedestrian& getPD(int PDIndex);

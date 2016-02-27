@@ -16,7 +16,7 @@ double compareImg(Mat& a, Mat& b) {
     return similarity;
 }
 
-double compareRect(Rect& a, Rect& b) {
+double compareRect(Rect a, Rect b) {
     if (!interRect(a, b))
         return 0;
     Rect cmp1, cmp2;
@@ -29,7 +29,7 @@ double compareRect(Rect& a, Rect& b) {
     return (double)re.height*re.width/cmp1.height*cmp1.width;
 }
 
-bool interRect(Rect& a, Rect& b) {
+bool interRect(const Rect a, const Rect b) {
     if ((a & b).size().area() > 0)
         return true;
     return false;
@@ -88,6 +88,10 @@ Vec2d calAngle(Point a, Point b) {
     double y = b.y - a.y;
     double hyp = sqrt(x*x + y*y);
     return {x/hyp, y/hyp};
+}
+
+int calDistanceSqr(Point a, Point b) {
+    return (a.x-b.x)*(a.x-b.x) + (a.y-b.y)*(a.y-b.y);
 }
 
 int checkNewRects(vector<Rect>& temp, const vector<Rect>& oldRects, vector<Rect>& newRects);
@@ -184,6 +188,7 @@ Point intersectPoint(Line& a, Line& b);
 double dotProduct(Vec2d v1, Vec2d v2) {
     return v1[0]*v2[0] + v1[1]*v2[1];
 }
+
 
 ////////////////////////////////////////////////////////////
 

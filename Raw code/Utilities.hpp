@@ -31,11 +31,10 @@ void picture_switch(Mat &last, Mat &next);
 
 /* Rectangle */
 
-double compareRect(Rect& a, Rect& b);
-bool interRect(Rect& a, Rect& b); // Judge if two rects are intersection
+double compareRect(Rect a, Rect b);
+bool interRect(Rect a, Rect b); // Judge if two rects are intersection
 int deweight(vector<Rect>& v);
 int checkNewRects(vector<Rect>& temp, const vector<Rect>& oldRects, vector<Rect>& newRects);
-int whichOldRect(Rect& suspision, const vector<Rect>& oldRects);
 
 /* Line&Vector&Point */
 
@@ -43,6 +42,7 @@ void rand_point(Point &in, Point start, Size rg1, Size rg2);
 void rand_size(Size &in, Size max, double coef);
 double dotProduct(Vec2d v1, Vec2d v2);
 Vec2d calAngle(Point a, Point b);
+int calDistanceSqr(Point a, Point b);
 Vec2d calTestLineAngle(Line a);
 int calCrossProduct(Line& l1, Line& l2);
 double calP2LDistance(Point& p, Line& l);

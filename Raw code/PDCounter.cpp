@@ -7,18 +7,14 @@
 //
 
 #include "PDCounter.hpp"
+#include "FGSeg.hpp"
+#include "PDClassifier.hpp"
+#include "Painter.hpp"
+#include "Utilities.hpp"
 
-//int frameType;
-//Mat colorMask;
-//bool showPedestrian;
-//bool showTrajectory;
-//bool showsArea;
-//string lastLog;
-//int PassedNum;
-//int LostNum;
-//int MaxPedestrianNum;
-//vector<PDDetector> Detectors;
-//PDTrackerList trackers;
+#define MAX_AREA_NUM 4
+#define PEDESTRIAN_COLOR Scalar(0, 255, 0)
+#define AREA_COLOR Scalar(0, 0, 255)
 
 PDCounter::PDCounter(Mat& fframe) {
     frameType = fframe.type();
@@ -44,15 +40,15 @@ Mat PDCounter::detect(Mat& input) {
     }
     string log2("All areas are detected...\n");
     
-    Trackers.tracking(input); // NO parallel
+    string lost = i_to_s(Trackers.tracking(input)); // NO parallel
     
-    string log3("Tracking completed...\n");
+    string log3("Tracking completed...\nThe trackers lost " + lost + " pedestrians in this frame.\n");
     
     if (showPedestrian)
-        drawFound(input, output, Trackers.getCurrRects());
+        drawFound(input, output, Trackers.getCurrRects(), PEDESTRIAN_COLOR);
     if (showArea) {
         for (vector<PDDetector>::iterator it = Detectors.begin(); it != Detectors.end(); it++) {
-            drawArea(output, output, (*it).getArea());
+            drawArea(output, output, (*it).getArea(), AREA_COLOR);
         }
     }
     if (showTrajectory) {
@@ -71,14 +67,15 @@ string PDCounter::stop() {
 
 /* @Set */
 string PDCounter::adjust(int n) {
-    switch (n) {
-        case <#constant#>:
-            <#statements#>
-            break;
-            
-        default:
-            break;
-    }
+//    switch (n) {
+//        case <#constant#>:
+//            <#statements#>
+//            break;
+//            
+//        default:
+//            break;
+//    }
+    return "";
 }
 string PDCounter::setDetector(int set) {
     string dname;
@@ -95,6 +92,11 @@ string PDCounter::initArea() {
     return "All the zones boom.";
 }
 bool PDCounter::addArea(Mat& frame) {
+    if (areaID > MAX_AREA_NUM) {
+        lastLog.assign("Up to the limits. You cannot use zones more zhan " + i_to_s(MAX_AREA_NUM) + ". You can delete some zones to change your selection");
+        return false;
+    }
+    
     Rect temp;
     PDDetector td(frame, areaID++);
     Rect newArea = td.getArea();
@@ -109,17 +111,47 @@ bool PDCounter::addArea(Mat& frame) {
     return true;
 }
 bool PDCounter::delArea(Mat& frame, int ID) {
-    int counter = 0;
-    for (vector<PDDetector>::iterator it = Detectors.begin(); it != Detectors.end(); it++, counter++) {
-        if (ID == counter) {
+    for (vector<PDDetector>::iterator it = Detectors.begin(); it != Detectors.end(); it++) {
+        if ((*it).getID() == ID) {
             (*it).boom();
             Detectors.erase(it);
+//            if (it == Detectors.end()) {
+//                break;
+//            }
             lastLog.assign("Successfully delete the " + i_to_s(ID) + " zone.");
+//            areaID--;
             return true;
         }
         
     }
     lastLog.assign("There is no zone identified with the ID " + i_to_s(ID));
+    return false;
+}
+
+bool PDCounter::delAreaByClick(Mat& frame) {
+    ////////////Pending to write./////////////////
+    Mat show_frame;
+    Point choose;
+    for (vector<PDDetector>::iterator it = Detectors.begin(); it != Detectors.end(); it++) {
+        drawArea(show_frame, show_frame, (*it).getArea(), AREA_COLOR);
+        
+    }
+    pic_manipulator painter(show_frame);
+    painter.get_click_info();
+    choose = painter.getPoint();
+    for (vector<PDDetector>::iterator it = Detectors.begin(); it != Detectors.end(); it++) {
+        if (choose.inside((*it).getArea())) {
+            int ID = (*it).getID();
+            (*it).boom();
+            Detectors.erase(it);
+//            if (it == Detectors.end()) {
+//                break;
+//            }
+            lastLog.assign("Successfully delete the " + i_to_s(ID) + " zone.");
+            return true;
+        }
+    }
+    lastLog.assign("Where you click is no zones.");
     return false;
 }
 
@@ -162,8 +194,8 @@ unsigned long PDCounter::getPosPastNum(int ID) {
 unsigned long PDCounter::getNegPastNum(int ID) {
     return Detectors[ID].getNegDirNum();
 }
-unsigned long PDCounter::getMutiPastNum(int fromID, int toID) {
-    return Trackers.getMutiPastNum(fromID, toID);
+unsigned long PDCounter::getMultiPastNum(int fromID, int toID) {
+    return Detectors[toID].getMultiPastNum(fromID);
 }
 unsigned long PDCounter::getGhostNum(int ID) {
     return Detectors[ID].getUnknownNum();

@@ -8,6 +8,7 @@
 
 #include "PDClassifier.hpp"
 #include "Utilities.hpp"
+
 #define HaarCascadeFile "/Users/xmh/Desktop/PedestrianDetetion/PedestrianDetetion/Body/haarcascade_fullbody.xml"
 vector<string> PDClassifier::Detectors(3);
 

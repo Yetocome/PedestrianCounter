@@ -12,10 +12,11 @@
 #include <iostream>
 #include <opencv2/opencv.hpp>
 #include "Basis.hpp"
-#include "PDClassifier.hpp"
 #include "Tracker.hpp"
-
+#include "PDClassifier.hpp"
 using namespace cv;
+
+
 
 class PDDetector {
 public:
@@ -23,15 +24,17 @@ public:
     ~PDDetector();
     
     unsigned long detect(Mat& frame, PDTrackerList& trackers);
-    const Rect getArea(); // Output to check confilct.
-    void stop();
-    string setDetector();
+
+    void init();
     void boom();
     
+    string setDetector(int set = 0);
+    int getID();
+    const Rect getArea(); // Output to check confilct.
     unsigned long getPosDirNum();
     unsigned long getNegDirNum();
     unsigned long getUnknownNum();
-    
+    unsigned long getMultiPastNum(int fromID);
 private:
 //    void initDetector(Mat& frame);
     Rect Area;
@@ -42,10 +45,12 @@ private:
     unsigned long negDirNum;
     unsigned long unknownNum;
     unsigned long newNum;
-    vector<int> elseNum;
+    vector<unsigned long> elseNum;
     vector<Rect> tempRects;
     PDClassifier pdc;
     vector<int> buffer;
 };
 
 #endif /* PDDetector_hpp */
+
+

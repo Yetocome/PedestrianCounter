@@ -1,5 +1,5 @@
 //
-//  PedestrianCounter.hpp
+//  PDCounter.hpp
 //  PedestrianDetetion
 //
 //  Created by XMH on 1/31/16.
@@ -10,12 +10,8 @@
 #define PDCounter_hpp
 
 #include "Basis.hpp"
-#include "FGSeg.hpp"
-#include "PDClassifier.hpp"
 #include "PDDetector.hpp"
 #include "Tracker.hpp"
-#include "Painter.hpp"
-#include "Utilities.hpp"
 
 #include <opencv2/opencv.hpp>
 using namespace cv;
@@ -39,7 +35,7 @@ public:
                               // if overlapped, return false and set fails
                               // you can use the bool result to show result
     bool delArea(Mat& frame, int ID = -1);
-
+    bool delAreaByClick(Mat& frame);
     
     /* @Show Switch */
     string showPedestrianSwitch();
@@ -52,7 +48,7 @@ public:
     unsigned long getCurrNum(); // Return the number of pedestrians on the screen
     unsigned long getPosPastNum(int ID);
     unsigned long getNegPastNum(int ID);
-    unsigned long getMutiPastNum(int fromID, int toID);
+    unsigned long getMultiPastNum(int fromID, int toID);
     unsigned long getGhostNum(int ID);
     unsigned long getLostNum();
     
@@ -85,4 +81,4 @@ private:
     PDTrackerList Trackers;
 };
 
-#endif /* PedestrianCounter_hpp */
+#endif /* PDCounter_hpp */

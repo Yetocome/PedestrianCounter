@@ -7,6 +7,11 @@
 //
 
 #include "Tracker.hpp"
+#include "Utilities.hpp"
+#include "Preserver.hpp"
+
+Preserver TLogger("");
+
 #define Sim_Threshold 0.8
 
 PDTrackerOne::PDTrackerOne(Mat& frame, Rect trackBox, unsigned long AreaID, unsigned long PDID) {
@@ -16,6 +21,7 @@ PDTrackerOne::PDTrackerOne(Mat& frame, Rect trackBox, unsigned long AreaID, unsi
     
     who = PDID;
     size = trackBox.size();
+    lastLoc = {trackBox.x, trackBox.y};
     
     Pedestrian pd = {trackBox, gray(trackBox), PDID, AreaID};
     Trajectory.push_front(pd);
@@ -24,7 +30,7 @@ PDTrackerOne::PDTrackerOne(Mat& frame, Rect trackBox, unsigned long AreaID, unsi
     frameSize = frame.size();
     
     setSearchRange(3);
-    defaultTTC = trappedTickClock = 500;
+    defaultTTC = trappedTickClock = 50; //Important parameter
 
 }
 
@@ -63,27 +69,29 @@ bool PDTrackerOne::tracking(Mat& frame) {
     
     Mat similarity;
     matchTemplate(gray(searchWindow), Trajectory[0].model, similarity, chosenMethod);
-    imshow("Search window", gray(searchWindow));
+//    imshow("Search window", gray(searchWindow));
+    
 //    normalize(similarity, similarity, 0, 1, NORM_MINMAX, -1, Mat());
     double minVal, maxVal;
     Point minLoc, maxLoc;
     Point matchLoc;
     
     minMaxLoc(similarity, &minVal, &maxVal, &minLoc, &maxLoc/*, Mat()*/);
-    double ra = maxVal;
+//    double ra = maxVal;
     
     if(chosenMethod  == CV_TM_SQDIFF || chosenMethod == CV_TM_SQDIFF_NORMED) {
         matchLoc = minLoc;
-        ra = 1 - minVal;
+//        ra = 1 - minVal;
     } else {
         matchLoc = maxLoc;
     }
-    Rect location = {Point(matchLoc.x + searchWindow.x, matchLoc.y + searchWindow.y), size};
+    Point currLoc = {matchLoc.x + searchWindow.x, matchLoc.y + searchWindow.y};
+    Rect location = {currLoc, size};
     Pedestrian pd = {location, gray(location), who};
     
-    
-    
-    if (ra > Sim_Threshold) {
+//    cout << "Now, the similarity is " << ra << endl;
+//    if (ra > Sim_Threshold) {
+    if (calDistanceSqr(currLoc, lastLoc) != 0) {
         trappedTickClock = defaultTTC;
         Trajectory.push_front(pd);
         if (Dir == Vec2d(0, 0)) {
@@ -91,15 +99,29 @@ bool PDTrackerOne::tracking(Mat& frame) {
             Point currPoint(Trajectory[0].location.x, Trajectory[0].location.y);
             Dir = calAngle(formerPoint, currPoint);
         }
+        cout << "True tracking: ";
+        cout << "Last loc: " << lastLoc.x << ',' << lastLoc.y << " turns to be " << currLoc.x << ',' << currLoc.y << endl;        lastLoc = currLoc;
         return true;
     }
     trappedTickClock--;
-
+    cout << "Last loc: " << lastLoc.x << ',' << lastLoc.y << " turns to be " << currLoc.x << ',' << currLoc.y << endl;
+    lastLoc = currLoc;
     return false;
     
 }
-PDSeq PDTrackerOne::kill() {
+string PDTrackerOne::kill() {
+    string id = i_to_s((int)who);
+    string lostLog("The pedestrian of ID " + id + " was lost.");
+    string suicideLog("The pedestrian of ID " + id + " was killed deliberately.");
+    TLogger.process("The log of pedestrian[" + id + "]:");
+    TLogger.process(Trajectory);
     
+    if (trappedTickClock < 0) {
+        TLogger.process(lostLog);
+        return lostLog;
+    }
+    TLogger.process(lostLog);
+    return suicideLog;
 }
 bool PDTrackerOne::lost() {
     if (trappedTickClock < 0) return true;
@@ -139,6 +161,11 @@ double PDTrackerOne::calSearchWindow() {
 
 PDTrackerList::PDTrackerList() {
     PDID = 0;
+    lostNum = 0;
+}
+
+PDTrackerList::~PDTrackerList() {
+    
 }
 
 
@@ -151,17 +178,22 @@ int PDTrackerList::tracking(Mat& frame) {
 //    currPD.clear();
     currRects.clear();
     for (vector<PDTrackerOne>::iterator it = trackers.begin(); it != trackers.end(); it++) {
-        if ((*it).tracking(frame))
+        if (!(*it).tracking(frame))
             lost_per_frame++;
         if ((*it).lost()) {
+            lostNum++;
             (*it).kill();
             trackers.erase(it);
+            cout << "Successfully erased traker." << endl;
+            if (it == trackers.end()) {
+                break;
+            }
+
         } else {
 //            currPD.push_front((*it).getCurrPD());
             currRects.push_back((*it).getCurrPD().location);
         }
     }
-    
     return lost_per_frame;
 }
 //int PDTrackerList::addTracker(Mat& fisrtFrame, Pedestrian& newcomer);
@@ -169,19 +201,39 @@ unsigned long PDTrackerList::addTracker(Mat& fisrtFrame, Rect trackBox, int Area
     unsigned long currSize = trackers.size();
     PDTrackerOne t(fisrtFrame, trackBox, AreaID, PDID++);
     trackers.push_back(t);
+    cout << "New traker established, the size now is " << trackers.size() << endl;
     return currSize;
 }
-PDSeq PDTrackerList::delTracker(int ID) {
+string PDTrackerList::delTracker(int ID) {
     int counter = 0;
-    PDSeq temp;
+    string temp;
     for (vector<PDTrackerOne>::iterator it = trackers.begin(); it != trackers.end(); it++, counter++) {
         if (counter == ID) {
-            temp = (*it).kill();
+            temp.append((*it).kill());
             trackers.erase(it);
+            if (it == trackers.end()) {
+                break;
+            }
         }
     }
     return temp;
 }
+
+int PDTrackerList::getOldID(Rect suspision, double similarity) {
+    int ra = -1;
+    double sim = 0.0;
+    for (int i = 0; i < PDID; i++) {
+        double tem = compareRect(suspision, trackers[i].getCurrPD().location);
+        if (tem > sim) {
+            sim = tem;
+            ra = i;
+        }
+    }
+    if (sim < similarity)
+        ra = -1;
+    return ra;
+}
+
 //const PDSeq& PDTrackerList::getCurrPDSeq();
 const vector<Rect>& PDTrackerList::getCurrRects() {
     return currRects;
@@ -189,3 +241,17 @@ const vector<Rect>& PDTrackerList::getCurrRects() {
 unsigned long PDTrackerList::getSize() {
     return PDID;
 }
+
+unsigned long PDTrackerList::boom() {
+    unsigned long ra = PDID;
+    for (int i = 0; i < PDID; i++) {
+        delTracker(i);
+    }
+    PDID = 0;
+    return ra;
+}
+
+unsigned long PDTrackerList::getLostNum() {
+    return lostNum;
+}
+

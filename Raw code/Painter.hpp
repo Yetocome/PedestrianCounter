@@ -12,7 +12,7 @@
 #include <opencv2/opencv.hpp>
 #include <vector>
 #include "Basis.hpp"
-#include "Utilities.hpp"
+
 using namespace std;
 using namespace cv;
 
@@ -77,8 +77,9 @@ public:
     Mat getDst();
     Rect getSelectRect();
     Line getLine();
+    Point getPoint();
     
-public://info
+private://info
     Point point_place;//mark_s.x mark_s.y
     int point_blue;
     int point_green;
@@ -116,11 +117,10 @@ private:
     Mat greenMask;
 };
 
-
-void drawFound(Mat& input, Mat& output, vector<Rect> found);
+void drawFound(Mat& input, Mat& output, vector<Rect> found, Scalar color);
 void putPDInfo(Mat& input, Mat& output, Pedestrian target);
 void drawTrajectory(Mat& img, PDSeq& list, Scalar color = Scalar(255, 255, 0));
-void drawArea(Mat& input, Mat& output, Rect area);
+void drawArea(Mat& input, Mat& output, Rect area, Scalar color);
 
 
 #endif /* Painter_hpp */
