@@ -98,51 +98,12 @@ vector<Rect> PDClassifier::detect(Mat& img, vector<Rect>& ROIs) {
         default:
             break;
     }
-//    refResult();
     deweight(found);
     return found;
 }
 
-//int PDClassifier::refResult() {
-//    int num = 0;
-//
-//    for (vector<Rect>::iterator i; i != found.end(); i++) {
-////        std::cout << (*i).size() << endl;
-//        Rect r(*i);
-//        for (vector<Rect>::iterator j = i+1; j != found.end(); j++) {
-//            if ((r & *j) == r) {
-//                found.erase(i);
-//                num++;
-//            }
-//        }
-//    }
-////    refNum += num;
-//    return num;
-//}
 
 
-
-
-///////////////////////Test Code///////////////////////////
-//
-//    VideoCapture cap(TEST_VIDEO_0);
-//    if (!cap.isOpened())
-//        return -1;
-//
-//    Mat img, show_img;
-//    PDClassifier pc;
-//    namedWindow("video capture", CV_WINDOW_AUTOSIZE);
-//    pc.setDetector(0);
-//
-//    while (waitKey(20) < 0) { // Press any key to exit
-//       /* code */
-//      cap >> img;
-//      if (!img.data)
-//        continue;
-//      show_img = pc.detect(img);
-//
-//      imshow("video capture", show_img);
-//    }
 
 
 

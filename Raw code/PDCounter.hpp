@@ -28,7 +28,7 @@ public:
     /* @Set */
     string adjust(int n); // Adjust the pareameter to accommodate user's environment
     string setDetector(int detector = 0); // Return value turns to the name of detector
-    string initArea(); // Clear the area setting
+    string clearArea(); // Clear the area setting
     bool addArea(Mat& frame); // Input the names of area, and this function
                               // will show an extra named window to let user
                               // to draw an new detecting area and test line

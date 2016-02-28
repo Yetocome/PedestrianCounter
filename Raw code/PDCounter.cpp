@@ -36,11 +36,11 @@ Mat PDCounter::detect(Mat& input) {
     string log1("Begin detecting...\n");
     Mat output = input.clone();
     for (vector<PDDetector>::iterator it = Detectors.begin(); it != Detectors.end(); it++) {
-        (*it).detect(input, Trackers);
+        (*it).detect(output, Trackers);
     }
     string log2("All areas are detected...\n");
     
-    string lost = i_to_s(Trackers.tracking(input)); // NO parallel
+    string lost = i_to_s(Trackers.tracking(output)); // NO parallel
     
     string log3("Tracking completed...\nThe trackers lost " + lost + " pedestrians in this frame.\n");
     
@@ -84,7 +84,7 @@ string PDCounter::setDetector(int set) {
     }
     return "Successfully set all detectors to " + dname;
 }
-string PDCounter::initArea() {
+string PDCounter::clearArea() {
     for (vector<PDDetector>::iterator it = Detectors.begin(); it != Detectors.end(); it++) {
         (*it).boom();
     }
@@ -107,6 +107,7 @@ bool PDCounter::addArea(Mat& frame) {
             return false;
         }
     }
+    Detectors.push_back(td);
     lastLog.assign("Successfully created new zone to detect.");
     return true;
 }

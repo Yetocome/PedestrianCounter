@@ -16,16 +16,15 @@
 #include "PDClassifier.hpp"
 using namespace cv;
 
-
-
 class PDDetector {
 public:
+    PDDetector(int id);
     PDDetector(Mat& frame, int id);
-    ~PDDetector();
     
     unsigned long detect(Mat& frame, PDTrackerList& trackers);
 
-    void init();
+    void showSwitch();
+    void init(Mat& frame);
     void boom();
     
     string setDetector(int set = 0);
@@ -36,21 +35,27 @@ public:
     unsigned long getUnknownNum();
     unsigned long getMultiPastNum(int fromID);
 private:
-//    void initDetector(Mat& frame);
+    /* Zone info */
     Rect Area;
     int ID;
     Line testLine;
     Vec2d posDir;
+    bool showPedestrian;
+    /* Zone data */
     unsigned long posDirNum;
     unsigned long negDirNum;
     unsigned long unknownNum;
     unsigned long newNum;
     vector<unsigned long> elseNum;
+    /* Core components */
     vector<Rect> tempRects;
     PDClassifier pdc;
-    vector<int> buffer;
+    vector<int> noDirIDs;
 };
 
 #endif /* PDDetector_hpp */
+
+///////////////////////Test Code/////////////////////////////////////////
+
 
 

@@ -39,12 +39,16 @@ int deweight(vector<Rect>& v) {
     int num = 0;
     
     for (vector<Rect>::iterator i = v.begin(); i != v.end(); i++) {
-        Rect r(*i);
+        Rect r = *i;
         for (vector<Rect>::iterator j = i+1; j != v.end(); j++) {
-            if ((r & *j) == r) {
+            if ((r & (*j)) == r) {
                 v.erase(i);
                 num++;
+                break;
             }
+        }
+        if (i == v.end()) {
+            break;
         }
     }
     return num;
@@ -95,6 +99,15 @@ int calDistanceSqr(Point a, Point b) {
 }
 
 int checkNewRects(vector<Rect>& temp, const vector<Rect>& oldRects, vector<Rect>& newRects);
+
+void modifyRects(vector<Rect>& reRects, Point origin, Size limit) {
+    Rect frame = {Point(0, 0), limit};
+    for (vector<Rect>::iterator it = reRects.begin(); it != reRects.end(); it++) {
+        (*it).x += origin.x;
+        (*it).y += origin.y;
+        (*it) &= frame;
+    }
+}
 
 int calCrossProduct(Line& l1, Line& l2) {
     Line sl1 = {Point(0,0), Point(l1.end.x-l1.begin.x, l1.end.y-l1.begin.y)};

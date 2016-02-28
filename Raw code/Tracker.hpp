@@ -91,7 +91,7 @@ private:
 #endif /* Tracker_hpp */
 
 ////////////////////////////////Test Code/////////////////////////////////////////////
-
+//
 //VideoCapture cap(TEST_VIDEO_0);
 //if (!cap.isOpened())
 //return -1;
@@ -102,14 +102,22 @@ private:
 //namedWindow("video capture", CV_WINDOW_AUTOSIZE);
 //int areaID = 0;
 //
+//int lost_frame = 0;
 //while (true) { // Press any key to exit
 //    /* code */
 //    cap >> img;
-//    if (!img.data)
+//    if (!img.data && lost_frame < 3) {
+//        lost_frame++;
 //        continue;
+//    } else if (lost_frame >= 3) {
+//        break;
+//    } else {
+//        lost_frame = 0;
+//    }
 //    ptl.tracking(img);
 //    char op = waitKey(20);
 //    if (op == 32) { // 空格键暂停，增加跟踪框
+//        destroyWindow("video capture");
 //        painter.load(img);
 //        painter.draw_rect();
 //        ptl.addTracker(img, painter.getSelectRect(), areaID++);
@@ -119,6 +127,7 @@ private:
 //    drawFound(img, show_img, ptl.getCurrRects(), Scalar(0, 255, 0));
 //    imshow("video capture", show_img);
 //}
+
 
 
 

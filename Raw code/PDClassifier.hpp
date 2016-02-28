@@ -38,3 +38,26 @@ private:
 };
 
 #endif /* PedestrianClassifier_hpp */
+
+
+
+///////////////////////Test Code///////////////////////////
+//
+//    VideoCapture cap(TEST_VIDEO_0);
+//    if (!cap.isOpened())
+//        return -1;
+//
+//    Mat img, show_img;
+//    PDClassifier pc;
+//    namedWindow("video capture", CV_WINDOW_AUTOSIZE);
+//    pc.setDetector(0);
+//
+//    while (waitKey(20) < 0) { // Press any key to exit
+//       /* code */
+//      cap >> img;
+//      if (!img.data)
+//        continue;
+//      show_img = pc.detect(img);
+//
+//      imshow("video capture", show_img);
+//    }

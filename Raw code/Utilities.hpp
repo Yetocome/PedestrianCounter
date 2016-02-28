@@ -35,6 +35,7 @@ double compareRect(Rect a, Rect b);
 bool interRect(Rect a, Rect b); // Judge if two rects are intersection
 int deweight(vector<Rect>& v);
 int checkNewRects(vector<Rect>& temp, const vector<Rect>& oldRects, vector<Rect>& newRects);
+void modifyRects(vector<Rect>& reRects, Point origin, Size limit);
 
 /* Line&Vector&Point */
 

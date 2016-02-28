@@ -26,6 +26,7 @@ public:
     /* 基本配置 */
     void load(const string& );//载入图片mark_f
     void load(Mat &pic);
+    void switch_recover(bool flag = true); // 设置处理后的图像/(默认)原图像为还原图像
     void recover();//生成图片还原mark_a
     void back_up();//备份当前图像
     void change_backup_num(int n);//修改最大备份数量
@@ -44,12 +45,10 @@ public:
     void get_click_info();
     void show_info();
     
-    void draw_rect();//mark_t
-    void show_rect();
+    void draw_rect(bool show = 0);//mark_t
     void show_and_change_rect(float angle = 0);//弃用
     
-    void draw_line(Scalar color = Scalar(0, 255, 0));
-    
+    void draw_line(bool show = 0);
     /* 文字打印区 */
     void addtext(string text, Point place);//文本内容mark_a, mark_d
     void change_font(int cg);//mark_b
@@ -92,6 +91,7 @@ private:
     static void On_Mouth_Line(int event, int x, int y, int flag, void *param);
 private://base_parameter
     Mat src;
+    Mat re_dst;
     list<Mat> backup;
     int backup_num = 10;
     string save_name = "choose";
@@ -118,6 +118,7 @@ private:
 };
 
 void drawFound(Mat& input, Mat& output, vector<Rect> found, Scalar color);
+void drawFound(Mat& input, vector<Rect> found, Scalar color);
 void putPDInfo(Mat& input, Mat& output, Pedestrian target);
 void drawTrajectory(Mat& img, PDSeq& list, Scalar color = Scalar(255, 255, 0));
 void drawArea(Mat& input, Mat& output, Rect area, Scalar color);

@@ -46,13 +46,21 @@ void pic_manipulator::load(Mat &pic){
     dst = src.clone();
 }
 
+void pic_manipulator::switch_recover(bool flag) {
+    if (flag) {
+        re_dst = src;
+    } else {
+        re_dst = dst.clone();
+    }
+}
+
 void pic_manipulator::recover(){
-    dst = src.clone();
+    dst = re_dst.clone();
 }
 
 void pic_manipulator::back_up(){
     if (backup.size() > backup_num) {
-        backup.pop_back();
+        backup.pop_front();
         backup.push_back(dst);
     }
     else
@@ -62,6 +70,7 @@ void pic_manipulator::back_up(){
 void pic_manipulator::change_backup_num(int n){
     backup_num = n;
 }
+
 void pic_manipulator::recover_last(int step){
     if (step > 0 && step <= backup.size()) {
         for (int i = 0; i < step-1; i++) backup.pop_back();
@@ -130,7 +139,6 @@ void pic_manipulator::On_Mouth_Drawrect(int event, int x, int y, int flag, void 
         selection.height = abs(y - origin.y);//矩形高
         
         selection &= Rect(0, 0, image.cols, image.rows);//确保所选的矩形区域在图片范围内
-        
         pm->recover();
         //        Mat temp1 = image(selection);
         //        Mat temp2 = pm->greenMask(selection);
@@ -161,25 +169,18 @@ void pic_manipulator::On_Mouth_Drawrect(int event, int x, int y, int flag, void 
             break;
     }
 }
-
-void pic_manipulator::draw_rect(){
+void pic_manipulator::draw_rect(bool show){
     namedWindow(save_name);
+    switch_recover(false);
     imshow(save_name, dst);
     setMouseCallback( save_name, On_Mouth_Drawrect, this );//设置鼠标回调函数，消息响应
     while (cvWaitKey() != 13 );
     destroyWindow(save_name);
-    recover();
-}
-
-void pic_manipulator::show_rect() {
-    rectangle(dst, selection_rect, Scalar(0, 255, 0), 2);
-    
-    string point_a_x = i_to_s(selection_rect.x);
-    string point_a_y = i_to_s(selection_rect.y);
-    string point_b_x = i_to_s(selection_rect.x+selection_rect.width);
-    string point_b_y = i_to_s(selection_rect.y+selection_rect.height);
-    addtext('('+point_a_x+','+point_a_y+')', Point(selection_rect.x, selection_rect.y));
-    addtext('('+point_b_x+','+point_b_y+')', Point(selection_rect.x+selection_rect.width, selection_rect.y+selection_rect.height));
+    switch_recover();
+    if (!show) {
+        back_up();
+        recover();
+    }
 }
 
 void pic_manipulator::On_Mouth_Click(int event, int x, int y, int flag, void *param){
@@ -209,20 +210,11 @@ void pic_manipulator::show_info(){
     cout << "The point is on (" << point_place.x << ',' << point_place.y  << ')' << endl;
     cout << "The color is (" << point_blue << ',' << point_green << ',' << point_red << ')' << endl;
 }
-
 void pic_manipulator::show_and_change_rect(float angle){
     selection_rotated = RotatedRect(Point(selection_rect.x+selection_rect.width, selection_rect.y+selection_rect.height),
                                     Size(selection_rect.width, selection_rect.height), angle);
     back_up();
     
-}
-
-void pic_manipulator::draw_line(Scalar color) {
-    namedWindow(save_name);
-    imshow(save_name, dst);
-    setMouseCallback(save_name, On_Mouth_Line, this);
-    while (cvWaitKey() != 13 );
-    destroyWindow(save_name);
 }
 
 void pic_manipulator::On_Mouth_Line(int event, int x, int y, int flag, void *param) {
@@ -232,6 +224,7 @@ void pic_manipulator::On_Mouth_Line(int event, int x, int y, int flag, void *par
         pm->selection_line.end.x = x;
         pm->selection_line.end.y = y;
         
+
         pm->recover();
         line(pm->dst, pm->selection_line.begin, pm->selection_line.end, Scalar(0, 0, 255));
         
@@ -259,12 +252,25 @@ void pic_manipulator::On_Mouth_Line(int event, int x, int y, int flag, void *par
             break;
     }
 }
+void pic_manipulator::draw_line(bool show) {
+    namedWindow(save_name);
+    switch_recover(false);
+    imshow(save_name, dst);
+    setMouseCallback(save_name, On_Mouth_Line, this);
+    while (cvWaitKey() != 13 );
+    destroyWindow(save_name);
+    switch_recover();
+    if (!show) {
+        back_up();
+        recover();
+    }
+}
 
 /** Part3 **/
+
 void pic_manipulator::addtext(string text, Point place){
     putText(dst, text, place, font, font_scale, font_color, font_thickness, CV_AA);
 }
-
 void pic_manipulator::change_font(int cg){
     font = cg;
 }
@@ -279,7 +285,6 @@ void pic_manipulator::change_font_scale(double scale){
 }
 
 /** Part4 **/
-
 
 //使用退出键，退出显示
 
@@ -361,6 +366,11 @@ void drawFound(Mat& input, Mat& output, vector<Rect> found, Scalar color) {
     
     
     
+}
+
+void drawFound(Mat& input, vector<Rect> found, Scalar color) {
+    for (vector<Rect>::iterator iter = found.begin(); iter != found.end(); ++iter)
+        rectangle(input, *iter, color, 2);
 }
 void putPDInfo(Mat& input, Mat& output, Pedestrian target) {
     

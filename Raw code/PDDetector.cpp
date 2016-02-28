@@ -14,26 +14,17 @@
 
 Preserver PDDLogger("");
 
-PDDetector::PDDetector(Mat& frame, int id) : ID(id) {
-    pic_manipulator painter(frame);
-    painter.draw_rect();
-    Area = painter.getSelectRect();
-    painter.show_rect();
-    painter.draw_line();
-    testLine = painter.getLine();
-    posDirNum = 0;
-    negDirNum = 0;
-    unknownNum = 0;
-    testLine = getLineinRect(testLine, Area);
-    posDir = calTestLineAngle(testLine);
-}
-PDDetector::~PDDetector() {
+PDDetector::PDDetector(int id) : ID(id) {
     
+}
+
+PDDetector::PDDetector(Mat& frame, int id) : ID(id) {
+    init(frame);
 }
 
 unsigned long PDDetector::detect(Mat& frame, PDTrackerList& trackers) {
     Vec2d zeroVec = {0, 0};
-    for (vector<int>::iterator it = buffer.begin(); it != buffer.end(); it++) {
+    for (vector<int>::iterator it = noDirIDs.begin(); it != noDirIDs.end(); it++) {
         
         if (trackers[*it].getDir() == zeroVec) continue;
         if (dotProduct(trackers[*it].getDir(), posDir) > 0)
@@ -41,45 +32,73 @@ unsigned long PDDetector::detect(Mat& frame, PDTrackerList& trackers) {
         else {
             unknownNum++;
         }
-        buffer.erase(it); // Caution
-        if (it == buffer.end()) {
+        noDirIDs.erase(it); // Caution
+        if (it == noDirIDs.end()) {
             break;
         }
     }
     
     tempRects = pdc.detect(frame(Area));
+//    int i = 0;
+//    cout << "Before: " << endl;
+//    for (vector<Rect>::iterator it = tempRects.begin(); it != tempRects.end(); it++, i++) {
+//        cout << i << ": "  << "Point: " << (*it).x << ',' << (*it).y << " Size: " << (*it).width << ',' << (*it).height << endl;
+//    }
+//    i = 0;
+    modifyRects(tempRects, {Area.x, Area.y}, frame.size());
+//    cout << "After: " << endl;
+//    for (vector<Rect>::iterator it = tempRects.begin(); it != tempRects.end(); it++, i++) {
+//        cout << i << ": " << "Point: " << (*it).x << ',' << (*it).y << " Size: " << (*it).width << ',' << (*it).height << endl;
+//    }
     for (vector<Rect>::iterator it = tempRects.begin(); it != tempRects.end(); it++) {
         if (!intersectLineRect(testLine, *it)) {
-            tempRects.erase(it);
-            if (it == tempRects.end()) {
-                break;
+            if (showPedestrian) {
+                rectangle(frame, *it, Scalar(0, 0, 255));
             }
+
         } else {
+            if (showPedestrian) {
+                rectangle(frame, *it, Scalar(255, 0, 0));
+            }
             int index = trackers.getOldID(*it, RECTANGLE_SIMILARITY);
             if (index < 0) {
-                buffer.push_back((int)trackers.addTracker(frame, (*it), ID));
+                noDirIDs.push_back((int)trackers.addTracker(frame, (*it), ID));
 //                buffer.push;
             } else {
-                if (dotProduct(trackers[index].getDir(), posDir) < 0)
+                if (dotProduct(trackers[index].getDir(), posDir) < 0) {
                     negDirNum++;
+                }
             }
+            
+        }
+        tempRects.erase(it);
+        if (it == tempRects.end()) {
+            break;
         }
     }
-    newNum = buffer.size();
-//    vector<Rect> newRects;
-//    newNum = checkNewRects(tempRects, trackers.getCurrRects(), newRects);
-//    
-//    for (vector<Rect>::iterator it = newRects.begin(); it != newRects.end(); it++) {
-//        trackers.addTracker(frame, (*it), ID);
-//    }
+    newNum = noDirIDs.size();
+    
     return newNum;
 }
 
-void PDDetector::init() {
+void PDDetector::showSwitch() {
+    showPedestrian = !showPedestrian;
+}
+
+void PDDetector::init(Mat& frame) {
+    pic_manipulator painter(frame);
+    painter.draw_rect(true);
+    Area = painter.getSelectRect();
+    painter.draw_line(true);
+    testLine = painter.getLine();
     posDirNum = 0;
     negDirNum = 0;
     unknownNum = 0;
+    showPedestrian = false;
+    testLine = getLineinRect(testLine, Area);
+    posDir = calTestLineAngle(testLine);
 }
+
 void PDDetector::boom() {
     PDDLogger.process("Now the PDDetector of ID-" + i_to_s(ID) + " is logging:");
     PDDLogger.process("Area(x)", Area.x);
@@ -128,3 +147,5 @@ unsigned long PDDetector::getUnknownNum() {
 }
 
 ////////////////////////Test code///////////////////////////////
+//
+//
