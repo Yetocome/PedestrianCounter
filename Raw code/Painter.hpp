@@ -117,12 +117,10 @@ private:
     Mat greenMask;
 };
 
-void drawFounds(Mat& input, Mat& output, vector<Rect> found, Scalar color);
-void drawFounds(Mat& input, vector<Rect> found, Scalar color);
+void drawFound(Mat& input, Mat& output, vector<Rect> found, Scalar color);
+void drawFound(Mat& input, vector<Rect> found, Scalar color);
 void putPDInfo(Mat& input, Mat& output, Pedestrian target);
-void putPDInfo(Mat& input, Pedestrian target);
 void drawTrajectory(Mat& img, PDSeq& list, Scalar color = Scalar(255, 255, 0));
-void drawArea(Mat& input, Rect area, Scalar color);
 void drawArea(Mat& input, Mat& output, Rect area, Scalar color);
 
 

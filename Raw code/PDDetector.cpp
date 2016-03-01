@@ -61,19 +61,13 @@ unsigned long PDDetector::detect(Mat& frame, PDTrackerList& trackers) {
                 rectangle(frame, *it, Scalar(255, 0, 0));
             }
             int index = trackers.getOldID(*it, RECTANGLE_SIMILARITY);
-            if (index < 0) { // It is a new pedestrian
+            if (index < 0) {
                 noDirIDs.push_back((int)trackers.addTracker(frame, (*it), ID));
 //                buffer.push;
-            } else { // It is an old pedestrian
-                if (trackers[index].getSrc() != ID) { // Not duplicate
-                    trackers[index].setDst(ID); // Only record the last area the pedestrian go through
-                    if (dotProduct(trackers[index].getDir(), posDir) < 0) {
-                        negDirNum++;
-                    } else {
-                        posDirNum++;
-                    }
+            } else {
+                if (dotProduct(trackers[index].getDir(), posDir) < 0) {
+                    negDirNum++;
                 }
-
             }
             
         }
@@ -83,7 +77,7 @@ unsigned long PDDetector::detect(Mat& frame, PDTrackerList& trackers) {
         }
     }
     newNum = noDirIDs.size();
-    cout << "This frame has " << newNum << " new pedestrians." << endl;
+    
     return newNum;
 }
 

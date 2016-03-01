@@ -8,7 +8,6 @@
 
 #include "Tracker.hpp"
 #include "Utilities.hpp"
-#include "Painter.hpp"
 #include "Preserver.hpp"
 
 Preserver TLogger("");
@@ -24,7 +23,6 @@ PDTrackerOne::PDTrackerOne(Mat& frame, Rect trackBox, unsigned long AreaID, unsi
     size = trackBox.size();
     lastLoc = {trackBox.x, trackBox.y};
     
-    Src = AreaID;
     Pedestrian pd = {trackBox, gray(trackBox), PDID, AreaID};
     Trajectory.push_front(pd);
     
@@ -37,30 +35,17 @@ PDTrackerOne::PDTrackerOne(Mat& frame, Rect trackBox, unsigned long AreaID, unsi
 }
 
 string PDTrackerOne::setAccuracy(unsigned int set) {
-    if (set < 6) {
-        chosenMethod = set;
+    chosenMethod = set;
+    if (set > 5) {
+        return "Wrong set, there is no change";
     }
     switch (set) {
         case 0:
-            return "CV_TM_SQDIFF";
+            return "";
             break;
-        case 1:
-            return "CV_TM_SQDIFF_NORMED";
-            break;
-        case 2:
-            return "CV_TM_CCORR";
-            break;
-        case 3:
-            return "CV_TM_CCORR_NORMED";
-            break;
-        case 4:
-            return "CV_TM_CCOEFF";
-            break;
-        case 5:
-            return "CV_TM_CCOEFF_NORMED";
-            break;
+        
         default:
-            return "Wrong set, there is no change";
+            return "";
             break;
     }
 }
@@ -114,13 +99,12 @@ bool PDTrackerOne::tracking(Mat& frame) {
             Point currPoint(Trajectory[0].location.x, Trajectory[0].location.y);
             Dir = calAngle(formerPoint, currPoint);
         }
-//        cout << "True tracking: ";
-//        cout << "Last loc: " << lastLoc.x << ',' << lastLoc.y << " turns to be " << currLoc.x << ',' << currLoc.y << endl;
-        lastLoc = currLoc;
+        cout << "True tracking: ";
+        cout << "Last loc: " << lastLoc.x << ',' << lastLoc.y << " turns to be " << currLoc.x << ',' << currLoc.y << endl;        lastLoc = currLoc;
         return true;
     }
     trappedTickClock--;
-//    cout << "Last loc: " << lastLoc.x << ',' << lastLoc.y << " turns to be " << currLoc.x << ',' << currLoc.y << endl;
+    cout << "Last loc: " << lastLoc.x << ',' << lastLoc.y << " turns to be " << currLoc.x << ',' << currLoc.y << endl;
     lastLoc = currLoc;
     return false;
     
@@ -144,20 +128,13 @@ bool PDTrackerOne::lost() {
     return false;
 }
 
-void PDTrackerOne::setDst(unsigned long set) {
-    Dst = set;
-}
-
 const Pedestrian& PDTrackerOne::getCurrPD() {
     return Trajectory[0];
 }
 PDSeq& PDTrackerOne::getTrajectory() {
     return Trajectory;
 }
-unsigned long PDTrackerOne::getSrc() {
-    return Src;
-}
-unsigned long PDTrackerOne::getDst() {
+int PDTrackerOne::getDst() {
     return Dst;
 }
 Vec2d PDTrackerOne::getDir() {
@@ -185,7 +162,6 @@ double PDTrackerOne::calSearchWindow() {
 PDTrackerList::PDTrackerList() {
     PDID = 0;
     lostNum = 0;
-    showPDInfo = true;
 }
 
 PDTrackerList::~PDTrackerList() {
@@ -215,21 +191,11 @@ int PDTrackerList::tracking(Mat& frame) {
 
         } else {
 //            currPD.push_front((*it).getCurrPD());
-            if (showPDInfo) {
-                putPDInfo(frame, (*it).getCurrPD());
-            }
             currRects.push_back((*it).getCurrPD().location);
-            
         }
     }
-    
     return lost_per_frame;
 }
-
-void PDTrackerList::showPDInfoSwitch() {
-    showPDInfo = !showPDInfo;
-}
-
 //int PDTrackerList::addTracker(Mat& fisrtFrame, Pedestrian& newcomer);
 unsigned long PDTrackerList::addTracker(Mat& fisrtFrame, Rect trackBox, int AreaID) {
     unsigned long currSize = trackers.size();

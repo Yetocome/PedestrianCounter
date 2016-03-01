@@ -359,7 +359,7 @@ Point pic_manipulator::getPoint() {
     return point_place;
 }
 
-void drawFounds(Mat& input, Mat& output, vector<Rect> found, Scalar color) {
+void drawFound(Mat& input, Mat& output, vector<Rect> found, Scalar color) {
     input.copyTo(output); // Time consuming
     for (vector<Rect>::iterator iter = found.begin(); iter != found.end(); ++iter)
         rectangle(output, *iter, color, 2);
@@ -368,44 +368,22 @@ void drawFounds(Mat& input, Mat& output, vector<Rect> found, Scalar color) {
     
 }
 
-void drawFounds(Mat& input, vector<Rect> found, Scalar color) {
+void drawFound(Mat& input, vector<Rect> found, Scalar color) {
     for (vector<Rect>::iterator iter = found.begin(); iter != found.end(); ++iter)
         rectangle(input, *iter, color, 2);
 }
 void putPDInfo(Mat& input, Mat& output, Pedestrian target) {
-    pic_manipulator painter(input);
-    string info("ID:" + i_to_s((int)target.ID));
-    painter.addtext(info, Point(target.location.x, target.location.y));
-    output = painter.getDst();
-}
-
-void putPDInfo(Mat& input, Pedestrian target) {
-    pic_manipulator painter(input);
-    string info("ID:" + i_to_s((int)target.ID));
-    painter.change_font_scale(0.4);
-    painter.addtext(info, Point(target.location.x, target.location.y - 3));
-    input = painter.getDst();
+    
+    
 }
 
 void drawTrajectory(Mat& img, PDSeq& list, Scalar color) {
-    for (int i = 0; i < list.getPDNum(); i++) {
-        circle(img, {list[i].location.x + list[i].location.width/2, list[i].location.y + list[i].location.width/2}, 2, color, -1);
-    }
-
-}
-
-void drawArea(Mat& input, Rect area, Scalar color) {
-    Mat a(input(area));
-    Mat b(area.size(), CV_8UC3, color);
-    Mat mixed = mix_picture(a, b, 50);
-    picture_add(input, mixed, area);
+    
+    
 }
 
 void drawArea(Mat& input, Mat& output, Rect area, Scalar color) {
-    input.copyTo(output);
-    Mat a(input(area));
-    Mat b(area.size(), CV_8UC3, color);
-    Mat mixed = mix_picture(a, b, 50);
-    picture_add(output, mixed, area);
+    
+    
 }
 

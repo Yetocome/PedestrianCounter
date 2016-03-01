@@ -19,13 +19,14 @@ double compareImg(Mat& a, Mat& b) {
 double compareRect(Rect a, Rect b) {
     if (!interRect(a, b))
         return 0;
-//    Rect cmp1, cmp2;
-    if (a.area() > b.area()) {
-        swap(a, b);
+    Rect cmp1, cmp2;
+    if (a.height*a.width < b.height*b.width) {
+        cmp1 = b;
+        cmp2 = a;
     }
     
-    Rect re = a & b;
-    return (double)re.area()/a.area();
+    Rect re = cmp1 & cmp2;
+    return (double)re.height*re.width/cmp1.height*cmp1.width;
 }
 
 bool interRect(const Rect a, const Rect b) {

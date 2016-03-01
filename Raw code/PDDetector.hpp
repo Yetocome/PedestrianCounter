@@ -56,49 +56,6 @@ private:
 #endif /* PDDetector_hpp */
 
 ///////////////////////Test Code/////////////////////////////////////////
-//
-//VideoCapture cap(TEST_VIDEO_0);
-//if (!cap.isOpened())
-//return -1;
-//
-//Mat img;
-//int lost_frame = 0;
-//
-//
-//PDDetector pdd(0);
-//PDTrackerList pdt;
-//cap >> img;
-//while (true) {
-//    if (img.data) {
-//        pdd.init(img);
-//        break;
-//    }
-//}
-////    namedWindow("video raw", CV_WINDOW_AUTOSIZE);
-//namedWindow("Video", CV_WINDOW_AUTOSIZE);
-//pdd.showSwitch();
-//int start_frame = 300;
-//int i = 0;
-//while (true) { // Press any key to exit
-//    /* code */
-//    cap >> img;
-//    if (i++  < start_frame) {
-//        continue;
-//    }
-//    if (cvWaitKey(10) == 27)
-//        break;
-//    if (!img.data && lost_frame < 3) {
-//        lost_frame++;
-//        continue;
-//    } else if (lost_frame >= 3) {
-//        break;
-//    } else {
-//        lost_frame = 0;
-//    }
-//    
-//    pdd.detect( img, pdt);
-//    
-//    imshow("Video", img);
-//}
-//
+
+
 

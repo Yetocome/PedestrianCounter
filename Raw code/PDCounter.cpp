@@ -14,8 +14,7 @@
 
 #define MAX_AREA_NUM 4
 #define PEDESTRIAN_COLOR Scalar(0, 255, 0)
-#define AREA_COLOR Scalar(0, 255, 0)
-#define Trajectory_COLOR Scalar(255, 0, 255)
+#define AREA_COLOR Scalar(0, 0, 255)
 
 PDCounter::PDCounter(Mat& fframe) {
     frameType = fframe.type();
@@ -23,9 +22,9 @@ PDCounter::PDCounter(Mat& fframe) {
     showTrajectory = false;
     showArea = false;
     lastLog.assign("The main module begins running...");
+    areaID = 0;
     PassedNum = 0;
     Detectors.push_back(PDDetector(fframe, 0));
-    areaID = 1;
     
 }
 PDCounter::~PDCounter() {
@@ -45,17 +44,16 @@ Mat PDCounter::detect(Mat& input) {
     
     string log3("Tracking completed...\nThe trackers lost " + lost + " pedestrians in this frame.\n");
     
-    if (showPedestrian) {
-        drawFounds(output, Trackers.getCurrRects(), PEDESTRIAN_COLOR);
-    }
+    if (showPedestrian)
+        drawFound(input, output, Trackers.getCurrRects(), PEDESTRIAN_COLOR);
     if (showArea) {
         for (vector<PDDetector>::iterator it = Detectors.begin(); it != Detectors.end(); it++) {
-            drawArea(output, (*it).getArea(), AREA_COLOR);
+            drawArea(output, output, (*it).getArea(), AREA_COLOR);
         }
     }
     if (showTrajectory) {
         for (int i = 0; i < Trackers.getSize(); i++) {
-            drawTrajectory(output, Trackers[i].getTrajectory(), Trajectory_COLOR);
+            drawTrajectory(output, Trackers[i].getTrajectory());
         }
     }
     string log4("Drawing completed");
