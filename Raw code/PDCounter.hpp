@@ -82,3 +82,60 @@ private:
 };
 
 #endif /* PDCounter_hpp */
+
+
+////////////////////////////Test Code////////////////////////////////////////
+
+//
+//
+//VideoCapture cap(TEST_VIDEO_0);
+//if (!cap.isOpened())
+//return -1;
+//
+//Mat img;
+//int lost_frame = 0;
+//
+//while (true) {
+//    cap >> img;
+//    if (img.data) {
+//        break;
+//    }
+//}
+//PDCounter pc(img);
+////    pc.showPedestrianSwitch();
+//pc.showTrajectorySwitch();
+//pc.showAreasSwitch();
+//namedWindow("Video", CV_WINDOW_AUTOSIZE);
+//int start_frame = 0;
+//int i = 0;
+//
+//while (true) { // Press any key to exit
+//    /* code */
+//    cap >> img;
+//    if (i++  < start_frame) {
+//        continue;
+//    }
+//    if (cvWaitKey(10) == 27)
+//        break;
+//    if (!img.data && lost_frame < 3) {
+//        lost_frame++;
+//        continue;
+//    } else if (lost_frame >= 3) {
+//        break;
+//    } else {
+//        lost_frame = 0;
+//    }
+//    pc.detect(img);
+//    cout << "Current Data:" << endl;
+//    cout << "CurrNum:" << pc.getCurrNum() << endl; // Return the number of pedestrians on the screen
+//    cout << "PosPastNum:" << pc.getPosPastNum(0) << endl;
+//    cout << "NegPastNum:" << pc.getNegPastNum(0) << endl;
+//    //        cout << "" << pc.getMultiPastNum(int fromID, int toID) << endl;
+//    cout << "GhostNum:" << pc.getGhostNum(0) << endl;
+//    cout << "LostNum:" << pc.getLostNum() << endl;
+//    imshow("Video", img);
+//    }
+
+
+
+
