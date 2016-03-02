@@ -83,7 +83,7 @@ int calQuadrant(Vec2d v) {
 
 Vec2d calTestLineAngle(Line a) {
     Vec2d temp = calAngle(a.begin, a.end);
-    return {-temp[1], temp[0]};
+    return {temp[1], -temp[0]};
 }
 
 Vec2d calAngle(Point a, Point b) {

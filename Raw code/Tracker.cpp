@@ -24,7 +24,7 @@ PDTrackerOne::PDTrackerOne(Mat& frame, Rect trackBox, unsigned long AreaID, unsi
     size = trackBox.size();
     lastLoc = {trackBox.x, trackBox.y};
     
-    Src = AreaID;
+    Src = (int)AreaID;
     Pedestrian pd = {trackBox, gray(trackBox), PDID, AreaID};
     Trajectory.push_front(pd);
     
@@ -33,6 +33,7 @@ PDTrackerOne::PDTrackerOne(Mat& frame, Rect trackBox, unsigned long AreaID, unsi
     
     setSearchRange(3);
     defaultTTC = trappedTickClock = 50; //Important parameter
+    Dst = -1;
 
 }
 
@@ -144,7 +145,7 @@ bool PDTrackerOne::lost() {
     return false;
 }
 
-void PDTrackerOne::setDst(unsigned long set) {
+void PDTrackerOne::setDst(int set) {
     Dst = set;
 }
 
@@ -154,14 +155,18 @@ const Pedestrian& PDTrackerOne::getCurrPD() {
 PDSeq& PDTrackerOne::getTrajectory() {
     return Trajectory;
 }
-unsigned long PDTrackerOne::getSrc() {
+int PDTrackerOne::getSrc() {
     return Src;
 }
-unsigned long PDTrackerOne::getDst() {
+int PDTrackerOne::getDst() {
     return Dst;
 }
 Vec2d PDTrackerOne::getDir() {
     return Dir;
+}
+
+unsigned long PDTrackerOne::getID() {
+    return who;
 }
 
 double PDTrackerOne::calSearchWindow() {
@@ -256,13 +261,15 @@ string PDTrackerList::delTracker(int ID) {
 int PDTrackerList::getOldID(Rect suspision, double similarity) {
     int ra = -1;
     double sim = 0.0;
-    for (int i = 0; i < PDID; i++) {
-        double tem = compareRect(suspision, trackers[i].getCurrPD().location);
+    int i = 0;
+    for (vector<PDTrackerOne>::iterator it = trackers.begin(); it != trackers.end(); it++, i++) {
+        double tem = compareRect(suspision, (*it).getCurrPD().location);
         if (tem > sim) {
             sim = tem;
             ra = i;
         }
     }
+    
     if (sim < similarity)
         ra = -1;
     return ra;
@@ -272,9 +279,14 @@ int PDTrackerList::getOldID(Rect suspision, double similarity) {
 const vector<Rect>& PDTrackerList::getCurrRects() {
     return currRects;
 }
-unsigned long PDTrackerList::getSize() {
+unsigned long PDTrackerList::getNum() {
     return PDID;
 }
+
+unsigned long PDTrackerList::getSize() {
+    return trackers.size();
+}
+
 
 unsigned long PDTrackerList::boom() {
     unsigned long ra = PDID;

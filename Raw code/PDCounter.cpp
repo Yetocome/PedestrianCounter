@@ -189,7 +189,7 @@ string PDCounter::showAreasSwitch() {
 /* @Data */
 
 unsigned long PDCounter::getCurrNum() {
-    return Trackers.getSize();
+    return Trackers.getNum();
 }
 unsigned long PDCounter::getPosPastNum(int ID) {
     return Detectors[ID].getPosDirNum();

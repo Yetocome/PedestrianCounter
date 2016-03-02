@@ -33,13 +33,14 @@ public:
     string setAccuracy(unsigned int set = 0); // There are six subdivisions of matchTemplate method, from 0 to 5. Return the change log.
     string setTrappedCycle(int set = 500);
     double setSearchRange(double set = 3.0); // Must larger than 1, if set in a large number, the range will be the full image. Return the percentage of the input image.
-    void setDst(unsigned long set);
+    void setDst(int set);
     /* Get */
     const Pedestrian& getCurrPD();
     PDSeq& getTrajectory();
-    unsigned long getSrc();
-    unsigned long getDst();
+    int getSrc();
+    int getDst();
     Vec2d getDir();
+    unsigned long getID();
 
 private:
     double calSearchWindow();
@@ -54,8 +55,8 @@ private:
     int trappedTickClock; // Boolean value false it will, tacking stopped. Once true, becomes 500 again
     int defaultTTC;
     Size frameSize;
-    unsigned long Src; // Area ID
-    unsigned long Dst; // Second cross place.
+    int Src; // Area ID
+    int Dst; // Second cross place.
     Vec2d Dir = {0, 0};
 };
 
@@ -74,6 +75,7 @@ public:
 //    const PDSeq& getCurrPDSeq();
     
     const vector<Rect>& getCurrRects();
+    unsigned long getNum();
     unsigned long getSize();
     int getOldID(Rect suspision, double similarity);
 //    const PDTrackerOne& getTracker(int ID);

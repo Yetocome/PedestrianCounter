@@ -50,7 +50,7 @@ private:
     /* Core components */
     vector<Rect> tempRects;
     PDClassifier pdc;
-    vector<int> noDirIDs;
+//    vector<int> noDirIDs;
 };
 
 #endif /* PDDetector_hpp */
