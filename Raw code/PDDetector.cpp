@@ -10,6 +10,7 @@
 #include "Utilities.hpp"
 #include "Painter.hpp"
 #include "Preserver.hpp"
+
 #define RECTANGLE_SIMILARITY 0.6
 
 Preserver PDDLogger("");
@@ -26,7 +27,11 @@ unsigned long PDDetector::detect(Mat& frame, PDTrackerList& trackers) {
     Vec2d zeroVec = {0, 0};
     newNum = 0;
     
-    tempRects = pdc.detect(frame(Area));
+//    tempRects = pdc.detect(frame(Area));
+    fgs.setROI(Area);
+//    vector<Rect> lr = fgs.detect(frame);
+    tempRects = pdc.detect(frame(Area), fgs.detect(frame));
+    
     modifyRects(tempRects, {Area.x, Area.y}, frame.size());
 
     for (vector<Rect>::iterator it = tempRects.begin(); it != tempRects.end(); it++) {

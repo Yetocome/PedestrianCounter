@@ -14,6 +14,7 @@
 #include "Basis.hpp"
 #include "Tracker.hpp"
 #include "PDClassifier.hpp"
+#include "FGSeg.hpp"
 using namespace cv;
 
 class PDDetector {
@@ -50,7 +51,7 @@ private:
     /* Core components */
     vector<Rect> tempRects;
     PDClassifier pdc;
-//    vector<int> noDirIDs;
+    FGSeg fgs;
 };
 
 #endif /* PDDetector_hpp */

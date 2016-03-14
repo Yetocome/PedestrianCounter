@@ -25,7 +25,7 @@ public:
     const string setDetector(int set = 0);
 //    vector<Rect> detect(Mat& img); // detect the full image to seek out pedestrians
     vector<Rect> detect(Mat img);
-    vector<Rect> detect(Mat& img, vector<Rect>& ROIs);
+    vector<Rect> detect(Mat img, vector<Rect> ROIs);
     
 private:
     static void init_info();
@@ -41,7 +41,28 @@ private:
 
 
 
-///////////////////////Test Code///////////////////////////
+///////////////////////Test Code 1///////////////////////////
+//VideoCapture cap(TEST_VIDEO_0);
+//if (!cap.isOpened())
+//return -1;
+//
+//Mat img;
+//PDClassifier pc;
+//namedWindow("video capture", CV_WINDOW_AUTOSIZE);
+//pc.setDetector(0);
+//
+//vector<Rect> PDRects;
+//while (waitKey(20) < 0) { // Press any key to exit
+//    /* code */
+//    cap >> img;
+//    if (!img.data)
+//        continue;
+//    PDRects = pc.detect(img);
+//    drawFounds(img, PDRects, Scalar(0, 255, 0));
+//    imshow("video capture", img);
+//}
+
+///////////////////////Test Code 2///////////////////////////
 //
 //    VideoCapture cap(TEST_VIDEO_0);
 //    if (!cap.isOpened())

@@ -85,14 +85,13 @@ private:
 
 
 ////////////////////////////Test Code////////////////////////////////////////
-
-//
-//
 //VideoCapture cap(TEST_VIDEO_0);
+////    VideoCapture cap;
+////    cap.open("http://192.168.1.1:8080/?action=stream?dummy=param.mjpg");
 //if (!cap.isOpened())
 //return -1;
 //
-//Mat img;
+//Mat img, show_img;
 //int lost_frame = 0;
 //
 //while (true) {
@@ -125,7 +124,8 @@ private:
 //    } else {
 //        lost_frame = 0;
 //    }
-//    pc.detect(img);
+//    show_img = pc.detect(img);
+//    cout << pc.getLog() << endl;
 //    cout << "Current Data:" << endl;
 //    cout << "CurrNum:" << pc.getCurrNum() << endl; // Return the number of pedestrians on the screen
 //    cout << "PosPastNum:" << pc.getPosPastNum(0) << endl;
@@ -133,7 +133,7 @@ private:
 //    //        cout << "" << pc.getMultiPastNum(int fromID, int toID) << endl;
 //    cout << "GhostNum:" << pc.getGhostNum(0) << endl;
 //    cout << "LostNum:" << pc.getLostNum() << endl;
-//    imshow("Video", img);
+//    imshow("Video", show_img);
 //    }
 
 
