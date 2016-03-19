@@ -63,22 +63,38 @@ private:
 //}
 
 ///////////////////////Test Code 2///////////////////////////
+//VideoCapture cap(TEST_VIDEO_0);
+//if (!cap.isOpened())
+//return -1;
 //
-//    VideoCapture cap(TEST_VIDEO_0);
-//    if (!cap.isOpened())
-//        return -1;
+//int zoneNum = 0;
+//Mat img;
+//PDClassifier pc;
+//namedWindow("video capture", CV_WINDOW_AUTOSIZE);
+//pc.setDetector(0);
 //
-//    Mat img, show_img;
-//    PDClassifier pc;
-//    namedWindow("video capture", CV_WINDOW_AUTOSIZE);
-//    pc.setDetector(0);
-//
-//    while (waitKey(20) < 0) { // Press any key to exit
-//       /* code */
-//      cap >> img;
-//      if (!img.data)
-//        continue;
-//      show_img = pc.detect(img);
-//
-//      imshow("video capture", show_img);
+//vector<Rect> PDRects, chosenZone;
+//while (true) {
+//    cap >> img;
+//    if (img.data) {
+//        break;
 //    }
+//}
+//
+//cout << "How many zones do you want to test?" << endl;
+//cin >> zoneNum;
+//pic_manipulator fimg(img);
+//for (int i = 0; i < zoneNum; i++) {
+//    fimg.draw_rect();
+//    chosenZone.push_back(fimg.getSelectRect());
+//}
+//while (waitKey(20) < 0) { // Press any key to exit
+//    /* code */
+//    cap >> img;
+//    if (!img.data)
+//        continue;
+//    PDRects = pc.detect(img, chosenZone);
+//    drawFounds(img, PDRects, Scalar(0, 255, 0));
+//    PDRects.clear();
+//    imshow("video capture", img);
+//}

@@ -8,6 +8,7 @@
 
 #include "Utilities.hpp"
 #include <cmath>
+#include <ctime>
 
 double compareImg(Mat& a, Mat& b) {
     double errorL2 = norm( a, b, CV_L2 );
@@ -100,7 +101,7 @@ int calDistanceSqr(Point a, Point b) {
 int checkNewRects(vector<Rect>& temp, const vector<Rect>& oldRects, vector<Rect>& newRects);
 
 void modifyRects(vector<Rect>& reRects, Point origin, Size limit) {
-    Rect frame = {Point(0, 0), limit};
+    Rect frame(Point(0, 0), limit);
     for (vector<Rect>::iterator it = reRects.begin(); it != reRects.end(); it++) {
         (*it).x += origin.x;
         (*it).y += origin.y;

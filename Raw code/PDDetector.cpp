@@ -24,15 +24,18 @@ PDDetector::PDDetector(Mat& frame, int id) : ID(id) {
 }
 
 unsigned long PDDetector::detect(Mat& frame, PDTrackerList& trackers) {
-    Vec2d zeroVec = {0, 0};
+//    Vec2d zeroVec = {0, 0};
+    Vec2d zeroVec(0, 0);
     newNum = 0;
     
 //    tempRects = pdc.detect(frame(Area));
-    fgs.setROI(Area);
-//    vector<Rect> lr = fgs.detect(frame);
-    tempRects = pdc.detect(frame(Area), fgs.detect(frame));
     
-    modifyRects(tempRects, {Area.x, Area.y}, frame.size());
+//    fgs.setROI(frame(Area), Area);
+    fgs.setROI(frame, Area);
+//    tempRects = fgs.detect(frame);
+    tempRects = pdc.detect(frame, fgs.detect(frame));
+    
+//    modifyRects(tempRects, {Area.x, Area.y}, frame.size());
 
     for (vector<Rect>::iterator it = tempRects.begin(); it != tempRects.end(); it++) {
         if (!intersectLineRect(testLine, *it)) {
@@ -143,7 +146,3 @@ unsigned long PDDetector::getNegDirNum() {
 unsigned long PDDetector::getUnknownNum() {
     return unknownNum;
 }
-
-////////////////////////Test code///////////////////////////////
-//
-//

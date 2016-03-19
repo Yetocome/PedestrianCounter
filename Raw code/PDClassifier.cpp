@@ -79,12 +79,13 @@ vector<Rect> PDClassifier::detect(Mat img, vector<Rect> ROIs) {
 
     switch (CurrDetector) {
         case 0:
-            for (vector<Rect>::iterator iter= ROIs.begin(); iter != ROIs.end(); iter++) {
+            for (vector<Rect>::iterator iter = ROIs.begin(); iter != ROIs.end(); iter++) {
                 hog.detectMultiScale(img(*iter), temp, 0, Size(8,8), Size(32,32), scaleFactor, 2);
-                for (vector<Rect>::iterator it= temp.begin(); it != temp.end(); it++) {
-                    (*it).x += (*iter).x;
-                    (*it).y += (*iter).y;
-                }
+//                for (vector<Rect>::iterator it= temp.begin(); it != temp.end(); it++) {
+//                    (*it).x += (*iter).x;
+//                    (*it).y += (*iter).y;
+//                }
+                modifyRects(temp, {(*iter).x, (*iter).y}, img.size());
                 found.insert(found.end(), temp.begin(), temp.end());
             }
 
@@ -95,10 +96,11 @@ vector<Rect> PDClassifier::detect(Mat img, vector<Rect> ROIs) {
                 cvtColor(img, gray, CV_BGR2GRAY);
                 equalizeHist(gray, gray);//直方图均衡化:通过拉伸像素强度分布范围来增强图像对比度
                 cas.detectMultiScale(gray, temp, scaleFactor, 2, 0|CV_HAAR_SCALE_IMAGE, Size(27, 27), Size(100,100));
-                for (vector<Rect>::iterator it= temp.begin(); it != temp.end(); it++) {
-                    (*it).x += (*iter).x;
-                    (*it).y += (*iter).y;
-                }
+//                for (vector<Rect>::iterator it= temp.begin(); it != temp.end(); it++) {
+//                    (*it).x += (*iter).x;
+//                    (*it).y += (*iter).y;
+//                }
+                modifyRects(temp, {(*iter).x, (*iter).y}, img.size());
                 found.insert(found.end(), temp.begin(), temp.end());
 
             }

@@ -1,5 +1,5 @@
 #include  "FGSeg.hpp"
-#include <time.h>
+#include<time.h>
 
 BackgroundSubtractorMOG2 bgSubtractor(20,16,true);
 
@@ -10,20 +10,21 @@ FGSeg::~FGSeg(){
     
 }
 
-bool FGSeg::setROI(Rect ROI){
-    if(frame==0) {
-        cout<< "请等待第一帧后设置" <<endl;
+bool FGSeg::setROI(Mat &img, Rect ROI){
+    total=Rect(0,0,img.cols,img.rows);
+    re.clear();
+    if((ROI&total)!=ROI){
+        printf("invalid input\n");
         return false;
     }
-    re.clear();
-    if((ROI&total)!=ROI) return false;
     re.push_back(ROI);
     return true;
 }
 
 bool FGSeg::setROI(vector<Rect>& ROI){
     if(frame==0){
-        cout<< "请等待第一帧后设置" <<endl;
+        cout<<"请等待第一帧后设置"<<endl;
+        frame++;
         return false;
     }
     re.clear();
@@ -45,16 +46,11 @@ Mat FGSeg::getMask(Mat& input){
     bgSubtractor(input,gray_diff,0.001);
     morphologyEx(gray_diff,gray_diff,MORPH_OPEN,Mat(3,3,CV_8U),Point(-1,-1),1);//腐蚀
     morphologyEx(gray_diff,gray_diff,MORPH_CLOSE,Mat(3,3,CV_8U),Point(-1,-1),1);//膨胀
-    imshow("gray",gray_diff);
+//    imshow("gray",gray_diff);
     return gray_diff;
 }
-vector<Rect> FGSeg::detect(Mat& input){
-    if(frame==0){
-        total=Rect(0,0,input.cols,input.rows);
-    }
-    frame++;
-    
-    vector<Rect> temp,t;
+vector<Rect> FGSeg::detect(Mat input){
+    vector<Rect> temp;
     Mat result = input;
     Mat gray_diff=getMask(input);
     
@@ -68,32 +64,29 @@ vector<Rect> FGSeg::detect(Mat& input){
             }
         }
     }
+    
+//    temp.clear();
+//    if((max_x-min_x<32)||(max_y-min_y<32)) return temp;
+//    
     Rect r(min_y,min_x,max_y-min_y,max_x-min_x);
-    t.push_back(r);
     if (re.empty()){
-        for(int i=0;i<t.size();i++){
-            Rect r=t[i];
-            temp.push_back(r);
-        }
+        temp.push_back(r);
     }
     else for(int i=0; i<re.size(); i++)
     {
-        for(int j=0;j<t.size();j++){
-            Rect r=t[j];
-            Rect R = re[i];
-            temp.push_back(R&r);
-        }
+        Rect R = re[i];
+        temp.push_back(R&r);
     }
     
-    //下面画出矩形框
-    for(int i=0; i<temp.size(); i++)
-    {
-        Rect r=temp[i];
-        rectangle(result, r.tl(), r.br(), Scalar(0,255,0), 3);
+    if (temp[0].width < 32 || temp[0].height < 32) {
+        temp.clear();
     }
-    imshow("result",result);
+//    //下面画出矩形框
+//    for(int i=0; i<temp.size(); i++)
+//    {
+//        Rect r=temp[i];
+//        rectangle(result, r.tl(), r.br(), Scalar(0,255,0), 3);
+//    }
+//    imshow("result",result);
     return temp;
 }
-
-
-

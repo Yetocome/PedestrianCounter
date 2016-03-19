@@ -34,8 +34,8 @@ public:
                               // to draw an new detecting area and test line
                               // if overlapped, return false and set fails
                               // you can use the bool result to show result
-    bool delArea(Mat& frame, int ID = -1);
-    bool delAreaByClick(Mat& frame);
+    bool delArea(Mat& frame, int ID = -1); // Delete the area by ID(Not test)
+    bool delAreaByClick(Mat& frame); // Delete the area by click(Not test)
     
     /* @Show Switch */
     string showPedestrianSwitch();
@@ -44,13 +44,12 @@ public:
     // string showFpsSwitch();
     
     /* @Data */
-    
     unsigned long getCurrNum(); // Return the number of pedestrians on the screen
-    unsigned long getPosPastNum(int ID);
-    unsigned long getNegPastNum(int ID);
-    unsigned long getMultiPastNum(int fromID, int toID);
-    unsigned long getGhostNum(int ID);
-    unsigned long getLostNum();
+    unsigned long getPosPastNum(int ID); // Return the number of pedestrians who passed the preset test line positively
+    unsigned long getNegPastNum(int ID); // Return the number of pedestrians who passed the preset test line negatively
+    unsigned long getMultiPastNum(int fromID, int toID);  // Return the number of pedestrians who passed from the fromID to the toID
+    unsigned long getGhostNum(int ID); // Return the number of pedestrians who
+    unsigned long getLostNum();  // Return the number of pedestrians who are lost while tracking
     
     string getLog(); // Get the log of last operation
     
@@ -135,7 +134,3 @@ private:
 //    cout << "LostNum:" << pc.getLostNum() << endl;
 //    imshow("Video", show_img);
 //    }
-
-
-
-

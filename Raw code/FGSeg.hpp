@@ -13,9 +13,9 @@ class FGSeg {
 public:
 	FGSeg();
 	~FGSeg();
-	bool setROI(Rect ROI);
+	bool setROI(Mat& img, Rect ROI);
 	bool setROI(vector<Rect>& ROIs);
-	vector<Rect> detect(Mat& input);
+	vector<Rect> detect(Mat input);
 	Mat getMask(Mat& input);
 	Mat getGray(Mat& input);
 

@@ -37,7 +37,7 @@ Mat PDCounter::detect(Mat& input) {
     string log1("Begin detecting...\n");
     Mat output = input.clone();
     for (vector<PDDetector>::iterator it = Detectors.begin(); it != Detectors.end(); it++) {
-        (*it).detect(output, Trackers);
+        (*it).detect(output, Trackers);// NO parallel
     }
     string log2("All areas are detected...\n");
     

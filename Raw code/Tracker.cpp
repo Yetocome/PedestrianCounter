@@ -101,8 +101,8 @@ bool PDTrackerOne::tracking(Mat& frame) {
     } else {
         matchLoc = maxLoc;
     }
-    Point currLoc = {matchLoc.x + searchWindow.x, matchLoc.y + searchWindow.y};
-    Rect location = {currLoc, size};
+    Point currLoc(matchLoc.x + searchWindow.x, matchLoc.y + searchWindow.y);
+    Rect location(currLoc, size);
     Pedestrian pd = {location, gray(location), who};
     
 //    cout << "Now, the similarity is " << ra << endl;

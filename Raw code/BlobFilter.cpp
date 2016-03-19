@@ -5,10 +5,8 @@ BlobFilter::BlobFilter(int set){
 	choice=set;
 }
 BlobFilter::~BlobFilter(){
-
 }
 void BlobFilter::adjustAccuracy(unsigned int level){
-
 }
 
 const string BlobFilter::setFilter(int set){
