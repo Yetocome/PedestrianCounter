@@ -11,7 +11,7 @@ public:
 	~BlobFilter();
 	void adjustAccuracy(unsigned int level);
 	const string setFilter(int set = 0);
-	vector<Rect> filtrate(Mat& mask);
+	vector<Rect> filtrate(Mat& mask, Rect x);
 private:
 	int choice;
 };

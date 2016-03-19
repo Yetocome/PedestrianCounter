@@ -5,8 +5,10 @@ BlobFilter::BlobFilter(int set){
 	choice=set;
 }
 BlobFilter::~BlobFilter(){
+
 }
 void BlobFilter::adjustAccuracy(unsigned int level){
+
 }
 
 const string BlobFilter::setFilter(int set){
@@ -15,7 +17,7 @@ const string BlobFilter::setFilter(int set){
 	if(set==0) return "segment filter is set";
 	else if(set==1) return "color filter is set";
 	else if(set==2) return "shape filter is set";
-	else return "set failed";
+	else return"set failed";
 }
 
 struct Node{
@@ -24,7 +26,7 @@ struct Node{
 int dr[]={-1,0,1,0};
 int dc[]={0,1,0,-1};
 
-vector<Rect> BlobFilter::filtrate(Mat& mask){
+vector<Rect> BlobFilter::filtrate(Mat& mask,Rect x){
 	vector<Rect> temp,t;
 	temp.clear();
 	Mat vis=Mat::zeros(mask.size(), CV_32FC1);
@@ -50,7 +52,6 @@ vector<Rect> BlobFilter::filtrate(Mat& mask){
 					Node u=q.front();q.pop();
 					for(int k=0;k<4;k++){
 						Node v={u.i+dr[k],u.j+dc[k]};
-						
 						if(v.i>=0&&v.i<mask.rows&&v.j>=0&&v.j<=mask.cols){
 							vv=vis.ptr<uchar>(v.i);pData=mask.ptr<uchar>(v.i);
 							if((vv[v.j]==0)&&(pData[v.j])){
@@ -63,15 +64,15 @@ vector<Rect> BlobFilter::filtrate(Mat& mask){
 				}	
 	//			cout<<min_x<<" "<<max_x<<" "<<min_y<<" "<<max_y<<endl;
 				Rect r(min_y,min_x,max_y-min_y,max_x-min_x);
-				t.push_back(r);
+				t.push_back(r&x);
 			}
 		}
 	}
 	
-//show the rects	
+//消除小的矩形
 	for(int i=0;i<t.size();i++){
 		Rect r=t[i];
-		if(r.height*r.width>800) temp.push_back(r);
+		if(r.area()>800) temp.push_back(r);
 	}
 	return temp;
 }
@@ -95,7 +96,8 @@ vector<Rect> BlobFilter::filtrate(Mat& mask){
 //		if (!img.data) continue;
 //		imshow("video capture", img);
 //		Mat x= fd.getMask(img);
-//		mObjects= de.filtrate(x);
+////		mObjects= fd.detect(img);
+//		mObjects= de.filtrate(x,fd.detect(img));
 //		for(int i=0; i<mObjects.size(); i++){
 //			Rect r=mObjects[i];
 //			rectangle(img, r.tl(), r.br(), Scalar(0,255,0), 3);

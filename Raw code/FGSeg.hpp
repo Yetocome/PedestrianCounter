@@ -7,8 +7,6 @@
 using namespace cv;
 using namespace std;
 
-
-
 class FGSeg {
 public:
 	FGSeg();

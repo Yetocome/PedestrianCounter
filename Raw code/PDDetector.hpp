@@ -15,6 +15,7 @@
 #include "Tracker.hpp"
 #include "PDClassifier.hpp"
 #include "FGSeg.hpp"
+#include "BlobFilter.hpp"
 using namespace cv;
 
 class PDDetector {
@@ -27,8 +28,10 @@ public:
     void showSwitch();
     void init(Mat& frame);
     void boom();
+
     
     string setDetector(int set = 0);
+    void setScene(int set = 0);
     int getID();
     const Rect getArea(); // Output to check confilct.
     unsigned long getPosDirNum();
@@ -37,6 +40,7 @@ public:
     unsigned long getMultiPastNum(int fromID);
 private:
     /* Zone info */
+    int Scene;
     Rect Area;
     int ID;
     Line testLine;
@@ -52,6 +56,7 @@ private:
     vector<Rect> tempRects;
     PDClassifier pdc;
     FGSeg fgs;
+    BlobFilter bf;
 };
 
 #endif /* PDDetector_hpp */

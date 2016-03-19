@@ -69,14 +69,18 @@ string PDCounter::stop() {
 
 /* @Set */
 string PDCounter::adjust(int n) {
-//    switch (n) {
-//        case <#constant#>:
-//            <#statements#>
-//            break;
-//            
-//        default:
-//            break;
-//    }
+    for (vector<PDDetector>::iterator it = Detectors.begin(); it != Detectors.end(); it++) {
+        (*it).setScene(n);
+    }
+    switch (n) {
+        case 0:
+            return "Successfully switch to the default scene";
+            break;
+        case 1:
+            return "Successfully switch to the overlook scene";
+        default:
+            break;
+    }
     return "";
 }
 string PDCounter::setDetector(int set) {

@@ -28,12 +28,20 @@ unsigned long PDDetector::detect(Mat& frame, PDTrackerList& trackers) {
     Vec2d zeroVec(0, 0);
     newNum = 0;
     
-//    tempRects = pdc.detect(frame(Area));
-    
-//    fgs.setROI(frame(Area), Area);
-    fgs.setROI(frame, Area);
-//    tempRects = fgs.detect(frame);
-    tempRects = pdc.detect(frame, fgs.detect(frame));
+    switch (Scene) {
+        case 0:
+            fgs.setROI(frame, Area);
+            tempRects = pdc.detect(frame, fgs.detect(frame));
+            break;
+        case 1:
+            Mat x= fgs.getMask(frame);
+            tempRects= bf.filtrate(x, Area);
+            deweight(tempRects);
+            break;
+//        default:
+//            break;
+    }
+
     
 //    modifyRects(tempRects, {Area.x, Area.y}, frame.size());
 
@@ -89,6 +97,7 @@ void PDDetector::showSwitch() {
 void PDDetector::init(Mat& frame) {
     pic_manipulator painter(frame);
     painter.draw_rect(true);
+    Scene = 0;
     Area = painter.getSelectRect();
     painter.draw_line(true);
     testLine = painter.getLine();
@@ -123,6 +132,10 @@ void PDDetector::boom() {
 
 string PDDetector::setDetector(int set) {
     return pdc.setDetector(set);
+}
+
+void PDDetector::setScene(int set) {
+    Scene = set;
 }
 
 int PDDetector::getID() {
