@@ -1,0 +1,14 @@
+<RCC>
+    <qresource prefix="/">
+        <file>image/background.jpg</file>
+        <file>image/play.png</file>
+        <file>image/undo.png</file>
+        <file>image/camera.png</file>
+        <file>image/big.png</file>
+        <file>image/small.png</file>
+        <file>image/label.png</file>
+        <file>image/open.png</file>
+        <file>image/exit.png</file>
+        <file>image/video.png</file>
+    </qresource>
+</RCC>

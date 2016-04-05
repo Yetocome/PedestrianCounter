@@ -1,0 +1,7 @@
+<RCC>
+    <qresource prefix="/xml">
+        <file>xml/haarcascade_fullbody.xml</file>
+        <file>xml/haarcascade_lowerbody.xml</file>
+        <file>xml/haarcascade_upperbody.xml</file>
+    </qresource>
+</RCC>

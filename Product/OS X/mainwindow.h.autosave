@@ -1,0 +1,80 @@
+#ifndef MAINWINDOW_H
+#define MAINWINDOW_H
+
+#include <QtWidgets/QApplication>
+#include <QtWidgets>
+#include <QMainWindow>
+#include "ui_mainwindow.h"
+//本地模式
+#include <QFileDialog>
+#include <QMessageBox>
+//侧边栏
+#include <QMouseEvent>
+#include <QStatusBar>
+#include <QLabel>
+//网络模式
+#include <QString>
+#include <QInputDialog>
+//弹窗
+#include "dialog.h"
+//图像处理
+#include<pdcounter.h>
+//#include<highgui.h>
+using namespace cv;
+//线程
+#include<captureloop.h>
+//调试
+#include<iostream>
+using namespace std;
+
+
+namespace Ui { class MainWindow;}
+class MainWindow : public QMainWindow
+{
+    Q_OBJECT
+
+public:
+    explicit MainWindow(QWidget *parent = 0);
+    void mouseMoveEvent(QMouseEvent *e);
+    ~MainWindow();
+private slots:
+
+    void on_actionOpen_triggered();//打开
+    void on_actionNet_triggered();//网络
+    void on_actionFile_triggered();//本地视频文件
+    void on_actionslice_triggered();//截图
+
+    void on_actionIntroduction_triggered();//介绍
+    void on_actionVersion_triggered();//版本号
+    void on_actionAbout_triggered();//关于
+    void show_data();
+    void on_radioButton_2_clicked();
+    
+private:
+    //widget
+    Ui::MainWindow *ui;
+    //p_c_
+    int module;
+    void closeEvent(QCloseEvent *event);
+    int current_number;
+    int max_number;
+    int count_number;
+    Mat img, show_img;
+    CaptureLoop *show_loop;
+};
+
+#endif // MAINWINDOW_H
+
+
+
+/*
+CV_FOURCC('P', 'I', 'M', '1') = MPEG-1 codec
+CV_FOURCC('M', 'J', 'P', 'G') = motion-jpeg codec
+CV_FOURCC('M', 'P', '4', '2') = MPEG-4.2 codec
+CV_FOURCC('D', 'I', 'V', '3') = MPEG-4.3 codec
+CV_FOURCC('D', 'I', 'V', 'X') = MPEG-4 codec
+CV_FOURCC('U', '2', '6', '3') = H263 codec
+CV_FOURCC('I', '2', '6', '3') = H263I codec
+CV_FOURCC('F', 'L', 'V', '1') = FLV1 codec
+-1 时候要选择
+*/
