@@ -34,7 +34,7 @@ public:
                               // to draw an new detecting area and test line
                               // if overlapped, return false and set fails
                               // you can use the bool result to show result
-    bool delArea(Mat& frame, int ID = -1); // Delete the area by ID(Not test)
+    bool delArea(int ID = -1); // Delete the area by ID(Not test)
     bool delAreaByClick(Mat& frame); // Delete the area by click(Not test)
     
     /* @Show Switch */
@@ -50,7 +50,8 @@ public:
     unsigned long getMultiPastNum(int fromID, int toID);  // Return the number of pedestrians who passed from the fromID to the toID
     unsigned long getGhostNum(int ID); // Return the number of pedestrians who
     unsigned long getLostNum();  // Return the number of pedestrians who are lost while tracking
-    
+    unsigned long getTotalNum(); //Return the sum of all area
+    unsigned long getAreaNum(); // Return the numbers of areas
     string getLog(); // Get the log of last operation
     
     /* @Custom */
@@ -61,10 +62,10 @@ public:
     // If time limits, you can choose not to add this function
     // The graphic trainning procedure is not necessary, I will try some ways to implement
     // this in the function, so you don't have to write too many extra codes
-    bool trainBySelf(String& pic_file); // Choose the picture path to divide positive
+    void trainBySelf(String pic_file); // Choose the picture path to divide positive
     // samples and negative samples
     // Fails if the pictures don't suit
-    bool trainBySelf(String& pos_file, String& neg_file); // Choose exiting samples' path
+    void trainBySelf(String pos_file, String neg_file); // Choose exiting samples' path
     
 private:
     int areaID;
@@ -79,6 +80,23 @@ private:
     vector<PDDetector> Detectors;
     PDTrackerList Trackers;
 };
+
+class MySVM : public CvSVM
+{
+public:
+    //获得SVM的决策函数中的alpha数组
+    double * get_alpha_vector()
+    {
+        return this->decision_func->alpha;
+    }
+    
+    //获得SVM的决策函数中的rho参数,即偏移量
+    float get_rho()
+    {
+        return this->decision_func->rho;
+    }
+};
+
 
 #endif /* PDCounter_hpp */
 
@@ -99,10 +117,17 @@ private:
 //        break;
 //    }
 //}
+////    int width, height;
+////    width = img.cols;
+////    height = img.rows;
+////    resize(img, show_img, Size(width*0.3, height*0.3));
+////
 //PDCounter pc(img);
+//
 ////    pc.showPedestrianSwitch();
 //pc.showTrajectorySwitch();
 //pc.showAreasSwitch();
+////    pc.adjust(1);
 //namedWindow("Video", CV_WINDOW_AUTOSIZE);
 //int start_frame = 0;
 //int i = 0;
@@ -110,11 +135,17 @@ private:
 //while (true) { // Press any key to exit
 //    /* code */
 //    cap >> img;
+//    //        resize(img, show_img, Size(width*0.3, height*0.3));
 //    if (i++  < start_frame) {
 //        continue;
 //    }
-//    if (cvWaitKey(10) == 27)
+//    char op = cvWaitKey(10);
+//    if (op == 27) {
 //        break;
+//    }
+//    else if (op == 'a') {
+//        pc.addArea(img);
+//    }
 //    if (!img.data && lost_frame < 3) {
 //        lost_frame++;
 //        continue;
@@ -124,13 +155,23 @@ private:
 //        lost_frame = 0;
 //    }
 //    show_img = pc.detect(img);
-//    cout << pc.getLog() << endl;
-//    cout << "Current Data:" << endl;
-//    cout << "CurrNum:" << pc.getCurrNum() << endl; // Return the number of pedestrians on the screen
-//    cout << "PosPastNum:" << pc.getPosPastNum(0) << endl;
-//    cout << "NegPastNum:" << pc.getNegPastNum(0) << endl;
-//    //        cout << "" << pc.getMultiPastNum(int fromID, int toID) << endl;
-//    cout << "GhostNum:" << pc.getGhostNum(0) << endl;
-//    cout << "LostNum:" << pc.getLostNum() << endl;
-//    imshow("Video", show_img);
+//    //        cout << pc.getLog() << endl;
+//    
+//    //
+//    //        cout << "Current Data:" << endl;
+//    //        cout << "CurrNum:" << pc.getCurrNum() << endl; // Return the number of pedestrians on the screen
+//    //        cout << "PosPastNum:" << pc.getPosPastNum(0) << endl;
+//    //        cout << "NegPastNum:" << pc.getNegPastNum(0) << endl;
+//    //        //        cout << "" << pc.getMultiPastNum(int fromID, int toID) << endl;
+//    //        cout << "GhostNum:" << pc.getGhostNum(0) << endl;
+//    //        cout << "LostNum:" << pc.getLostNum() << endl;
+//    if (pc.getAreaNum() > 1) {
+//        int n = (int)pc.getAreaNum();
+//        for (int i = 0 ; i < n; i++) {
+//            for (int j = 0; j < n; j++) {
+//                cout << "From " << i << " to " << j << ": " << pc.getMultiPastNum(i, j) << endl;
+//            }
+//        }
 //    }
+//    imshow("Video", show_img);
+//}

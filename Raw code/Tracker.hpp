@@ -67,7 +67,7 @@ public:
     
     PDTrackerOne& operator[](int ID);
     int tracking(Mat& frame);
-    void showPDInfoSwitch();
+    void setShowPDInfo(bool set);
 //    int addTracker(Mat& fisrtFrame, Pedestrian& newcomer);
     unsigned long addTracker(Mat& fisrtFrame, Rect trackBox, int AreaID);
 

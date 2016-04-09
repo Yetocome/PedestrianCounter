@@ -32,7 +32,7 @@ PDTrackerOne::PDTrackerOne(Mat& frame, Rect trackBox, unsigned long AreaID, unsi
     frameSize = frame.size();
     
     setSearchRange(3);
-    defaultTTC = trappedTickClock = 50; //Important parameter
+    defaultTTC = trappedTickClock = 10; //Important parameter
     Dst = -1;
 
 }
@@ -110,10 +110,17 @@ bool PDTrackerOne::tracking(Mat& frame) {
     if (calDistanceSqr(currLoc, lastLoc) != 0) {
         trappedTickClock = defaultTTC;
         Trajectory.push_front(pd);
-        if (Dir == Vec2d(0, 0)) {
-            Point formerPoint(Trajectory[1].location.x, Trajectory[1].location.y);
-            Point currPoint(Trajectory[0].location.x, Trajectory[0].location.y);
+        int num = (int)Trajectory.getPDNum();
+        if (num % 10 == 2 /*&& Dir == Vec2d(0, 0)*/) {
+
+            Point formerPoint(Trajectory[num-1].location.x, Trajectory[num-1].location.y);
+            Point currPoint;
+            if (num>10)
+                currPoint = Point(Trajectory[num-11].location.x, Trajectory[num-11].location.y);
+            else
+                currPoint = Point(Trajectory[0].location.x, Trajectory[0].location.y);
             Dir = calAngle(formerPoint, currPoint);
+            cout << "ID: " << who << " Source: " << Src << " Destination: " << Dst << " Dir:<" << Dir[0] << ',' << Dir[1] << '>' << endl;
         }
 //        cout << "True tracking: ";
 //        cout << "Last loc: " << lastLoc.x << ',' << lastLoc.y << " turns to be " << currLoc.x << ',' << currLoc.y << endl;
@@ -231,8 +238,8 @@ int PDTrackerList::tracking(Mat& frame) {
     return lost_per_frame;
 }
 
-void PDTrackerList::showPDInfoSwitch() {
-    showPDInfo = !showPDInfo;
+void PDTrackerList::setShowPDInfo(bool set) {
+    showPDInfo = set;
 }
 
 //int PDTrackerList::addTracker(Mat& fisrtFrame, Pedestrian& newcomer);

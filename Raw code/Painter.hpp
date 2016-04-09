@@ -32,6 +32,7 @@ public:
     void change_backup_num(int n);//修改最大备份数量
     void recover_last(int step);//还原到上step步
     void save_dst();//保存生成图片mark_f
+    void save_dst(string path);
     
     /** degree是放大程度 eg:1.2 **/
     void picture_addscale(double degree);//等比例改变增大图片,mark_a

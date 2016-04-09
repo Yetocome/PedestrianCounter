@@ -91,6 +91,9 @@ Vec2d calAngle(Point a, Point b) {
     double x = b.x - a.x;
     double y = b.y - a.y;
     double hyp = sqrt(x*x + y*y);
+//    cout << "a:(" << a.x << "," << a.y << ")" << endl;
+//    cout << "b:(" << b.x << "," << b.y << ")" << endl;
+//    cout << "hyp: " << hyp << endl;
     return {x/hyp, y/hyp};
 }
 

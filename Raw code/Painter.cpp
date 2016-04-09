@@ -82,6 +82,10 @@ void pic_manipulator::save_dst(){
     imwrite(save_path, dst);
 }
 
+void pic_manipulator::save_dst(string path) {
+    imwrite(path, dst);
+}
+
 /** Part2 **/
 void pic_manipulator::picture_addscale(double degree){
     resize(dst, dst, Size(dst.cols*degree,dst.rows*degree));
@@ -316,8 +320,9 @@ void pic_manipulator::delete_watermark(int model){
 }
 
 void pic_manipulator::picture_slice(){
-    Mat tmp(dst, selection_rect);
-    imwrite(save_path, tmp);
+//    Mat tmp(dst, selection_rect);
+    dst = dst(selection_rect);
+//    imwrite(save_path, tmp);
 }
 
 void pic_manipulator::change_save_path(string path){

@@ -16,10 +16,13 @@
 Preserver PDDLogger("");
 
 PDDetector::PDDetector(int id) : ID(id) {
-    
+    elseNum.resize(id+1, 0);
 }
 
 PDDetector::PDDetector(Mat& frame, int id) : ID(id) {
+//    elseNum.reserve(id);
+//    elseNum.clear();
+    elseNum.resize(id+1, 0);
     init(frame);
 }
 
@@ -34,59 +37,95 @@ unsigned long PDDetector::detect(Mat& frame, PDTrackerList& trackers) {
             tempRects = pdc.detect(frame, fgs.detect(frame));
             break;
         case 1:
-            Mat x= fgs.getMask(frame);
-            tempRects= bf.filtrate(x, Area);
+//            Mat x= fgs.getMask(frame);
+            Mat gray;
+            cvtColor(frame,gray,CV_BGR2GRAY);
+            tempRects= bf.filtrate(gray, Area);
             deweight(tempRects);
             break;
 //        default:
 //            break;
     }
-
-    
 //    modifyRects(tempRects, {Area.x, Area.y}, frame.size());
 
     for (vector<Rect>::iterator it = tempRects.begin(); it != tempRects.end(); it++) {
         if (!intersectLineRect(testLine, *it)) {
             if (showPedestrian) {
-                rectangle(frame, *it, Scalar(0, 0, 255));
+                rectangle(frame, *it, Scalar(0, 255, 0)); //If the pedestrians don't cross the test line, draw the green rectangles
             }
 
         } else {
             if (showPedestrian) {
-                rectangle(frame, *it, Scalar(255, 0, 0));
+                rectangle(frame, *it, Scalar(0, 255, 255)); //Yello rectangles
             }
             int index = trackers.getOldID(*it, RECTANGLE_SIMILARITY);
             if (index < 0) { // It is a new pedestrian
                 trackers.addTracker(frame, (*it), ID);
+                records.push_back(false);
                 newNum++;
             } else { // It is an unrecord pedestrian
-                if (trackers[index].getTrajectory().getPDNum() == 2) {
-                    if (dotProduct(trackers[index].getDir(), posDir) < 0) {
-                        unknownNum++;
-                    } else {
-                        posDirNum++;
+                if (trackers[index].getSrc() != ID) { // Distinguish from the first-entered zone
+                    while (elseNum.size() < trackers[index].getSrc()+1) {
+                        elseNum.push_back(0);
                     }
-                } else { // It is an very old pedestrian
-                    if (trackers[index].getSrc() != ID) { // Not duplicate
-                        if (trackers[index].getDst() == -1) {
-                            trackers[index].setDst(ID); // Only record the last area the pedestrian go through
-                            if (dotProduct(trackers[index].getDir(), posDir) < 0) {
-                                negDirNum++;
-                            } else {
-                                posDirNum++;
-                            }
+                    elseNum[trackers[index].getSrc()]++;
+                    if (trackers[index].getDst() != ID) { // No repetition
+                        trackers[index].setDst(ID); // Only record the last area the pedestrian go through
+                        if (dotProduct(trackers[index].getDir(), posDir) < 0) {
+                            negDirNum++;
+                        } else {
+                            posDirNum++;
+                            cout << "From: " << trackers[index].getSrc() << "Posnum++ <" << trackers[index].getDir()[0] << "," << trackers[index].getDir()[1] << ">(Positive direction: <" << posDir[0] << "," << posDir[1] <<">)." << endl;
+                        }
+                    } else {
+                       // Has been counted.
+                    }
+                } else {
+                    if (records[trackers[index].getID()]) {
+                        // do nothing
+                    } else if (trackers[index].getDir() != Vec2d(0,0)) {
+                        records[trackers[index].getID()] = true;
+                        if (dotProduct(trackers[index].getDir(), posDir) < 0) {
+                            unknownNum++;
+                            cout << "Unknownum++ <" << trackers[index].getDir()[0] << "," << trackers[index].getDir()[1] << ">." << endl;
+                        } else {
+                            posDirNum++;
+                            cout << "Posnum++ <" << trackers[index].getDir()[0] << "," << trackers[index].getDir()[1] << ">(Positive direction: <" << posDir[0] << "," << posDir[1] <<">)." << endl;
                         }
                     }
                 }
+
+//                if (trackers[index].getTrajectory().getPDNum() == 2) {
+//                    if (records[index]) {
+//                         // Do nothing
+//                    } else if (dotProduct(trackers[index].getDir(), posDir) < 0) {
+//                        unknownNum++;
+//                    } else {
+//                        posDirNum++;
+//                    }
+//                    records[index] = true;
+//                } else { // It is an very old pedestrian
+//                    if (trackers[index].getSrc() != ID) { // Not duplicate
+//                        if (trackers[index].getDst() == -1) {
+//                            trackers[index].setDst(ID); // Only record the last area the pedestrian go through
+//                            if (dotProduct(trackers[index].getDir(), posDir) < 0) {
+//                                negDirNum++;
+//                            } else {
+//                                posDirNum++;
+//                            }
+//                        }
+//                    }
+//                }
             }
             
         }
         tempRects.erase(it);
         if (it == tempRects.end()) {
             break;
-        }
+        } // Avoid erasing the iterator which doesn't exist. 
     }
-    cout << "This frame has " << newNum << " new pedestrians." << endl;
+    
+//    cout << "This frame has " << newNum << " new pedestrians." << endl;
     return newNum;
 }
 
@@ -101,12 +140,14 @@ void PDDetector::init(Mat& frame) {
     Area = painter.getSelectRect();
     painter.draw_line(true);
     testLine = painter.getLine();
+    cout << "Test Line is settled, begin <" << testLine.begin.x << ',' << testLine.begin.y << ">, end <" << testLine.end.x << ',' << testLine.end.y << ">." << endl;
     posDirNum = 0;
     negDirNum = 0;
     unknownNum = 0;
     showPedestrian = false;
     testLine = getLineinRect(testLine, Area);
     posDir = calTestLineAngle(testLine);
+    cout << "Direction is settled: <" << posDir[0] << ',' << posDir[1] << ">." << endl;
 }
 
 void PDDetector::boom() {
@@ -129,6 +170,9 @@ void PDDetector::boom() {
     }
 }
 
+void PDDetector::newFriend() {
+    elseNum.push_back(0);
+}
 
 string PDDetector::setDetector(int set) {
     return pdc.setDetector(set);

@@ -28,7 +28,7 @@ public:
     void showSwitch();
     void init(Mat& frame);
     void boom();
-
+    void newFriend();
     
     string setDetector(int set = 0);
     void setScene(int set = 0);
@@ -57,6 +57,7 @@ private:
     PDClassifier pdc;
     FGSeg fgs;
     BlobFilter bf;
+    vector<bool> records;
 };
 
 #endif /* PDDetector_hpp */
@@ -70,7 +71,6 @@ private:
 //Mat img;
 //int lost_frame = 0;
 //
-//
 //PDDetector pdd(0);
 //PDTrackerList pdt;
 //cap >> img;
@@ -83,7 +83,7 @@ private:
 ////    namedWindow("video raw", CV_WINDOW_AUTOSIZE);
 //namedWindow("Video", CV_WINDOW_AUTOSIZE);
 //pdd.showSwitch();
-//int start_frame = 300;
+//int start_frame = 0;
 //int i = 0;
 //while (true) { // Press any key to exit
 //    /* code */
@@ -102,9 +102,12 @@ private:
 //        lost_frame = 0;
 //    }
 //    
-//    pdd.detect( img, pdt);
+//    //        cout << "This frame has " << pdd.detect(img, pdt) << " new pedestrians." << endl;
+//    pdd.detect(img, pdt);
+//    pdt.tracking(img);
+//    //        cout << "Pos:" << pdd.getPosDirNum() << endl;
+//    //        cout << "Neg:" << pdd.getNegDirNum() << endl;
+//    //        cout << "Unknown:" << pdd.getUnknownNum() << endl << endl;
 //    
 //    imshow("Video", img);
 //}
-//
-
